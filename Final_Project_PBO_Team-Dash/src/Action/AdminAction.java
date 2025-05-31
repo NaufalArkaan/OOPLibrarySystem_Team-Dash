@@ -45,12 +45,12 @@ public class AdminAction {
         System.out.print("Masukkan pilihan Anda: ");
         try {
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); //
             return choice;
         } catch (InputMismatchException e) {
-            scanner.nextLine(); // Consume invalid input
+            scanner.nextLine(); //
             System.out.println("Input tidak valid. Harap masukkan angka sebagai pilihan.");
-            return -1; // Indicates an invalid input type
+            return -1; //
         }
     }
 
@@ -59,7 +59,7 @@ public class AdminAction {
         do {
             pilihan = displayMenu();
 
-            if (pilihan == -1) { // Invalid input type from displayMenu
+            if (pilihan == -1) {
                 continue;
             }
             try {
@@ -106,7 +106,7 @@ public class AdminAction {
     }
 
     public void manageBook() throws BookNotFoundException, NoDataFoundException {
-        int bookActionChoice = 0; // Initialize at declaration
+        int bookActionChoice = 0;
         do {
             System.out.println("\n=== Kelola Buku ===");
             System.out.println("1. Tambah Buku Baru / Tambah Stok Buku Lama");
@@ -116,13 +116,13 @@ public class AdminAction {
             System.out.println("5. Kembali ke Menu Admin");
             System.out.print("Masukkan pilihan Anda (Kelola Buku): ");
             try {
-                if (scanner.hasNextInt()) { // Check if the next input is an integer
+                if (scanner.hasNextInt()) {
                     bookActionChoice = scanner.nextInt();
                 } else {
                     System.out.println("Input tidak valid. Harap masukkan angka.");
-                    bookActionChoice = 0; // Default to loop again on non-integer input
+                    bookActionChoice = 0;
                 }
-                scanner.nextLine(); // Consume newline or the invalid input
+                scanner.nextLine();
 
                 switch (bookActionChoice) {
                     case 1: addBookOrStock(); break;
@@ -131,22 +131,20 @@ public class AdminAction {
                     case 4: removeBook(); break;
                     case 5: System.out.println("Kembali ke Menu Admin..."); break;
                     default:
-                        // Avoid printing "tidak valid" if user choice is not 5 but simply out of menu range,
-                        // as the loop condition handles continuation.
+
                         if (bookActionChoice != 5) {
                             System.out.println("Pilihan tidak valid untuk Kelola Buku. Silakan coba lagi.");
                         }
                         break;
                 }
-            } catch (InputMismatchException e) { // This catch handles cases where nextInt() fails unexpectedly
-                scanner.nextLine(); // Consume invalid input
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
                 System.out.println("Input tidak valid. Harap masukkan angka untuk pilihan Kelola Buku.");
-                bookActionChoice = 0; // Reset choice to loop again
+                bookActionChoice = 0;
             } catch (IllegalArgumentException iae) {
                 System.err.println("Error Input Data Buku: " + iae.getMessage());
             }
-            // BookNotFoundException and NoDataFoundException are declared to be thrown by manageBook
-            // and will be caught by the processMenu method's catch blocks.
+
         } while (bookActionChoice != 5);
     }
 
@@ -302,10 +300,10 @@ public class AdminAction {
         System.out.print("Masukkan User ID member yang mengembalikan buku: ");
         int userId;
         try {
-            userId = scanner.nextInt(); // This can throw InputMismatchException
-            scanner.nextLine(); // Consume newline
+            userId = scanner.nextInt();
+            scanner.nextLine(); //
         } catch (InputMismatchException e) {
-            scanner.nextLine(); // Consume the invalid input if nextInt() failed partway
+            scanner.nextLine(); //
             System.err.println("User ID tidak valid. Harap masukkan angka.");
             return;
         }
@@ -501,7 +499,7 @@ public class AdminAction {
             System.out.print("Masukkan " + fieldName + ": ");
             if (scanner.hasNextInt()) {
                 number = scanner.nextInt();
-                scanner.nextLine(); // Bersihkan buffer
+                scanner.nextLine(); //
                 if (number >= 0) {
                     break;
                 } else {
@@ -509,7 +507,7 @@ public class AdminAction {
                 }
             } else {
                 System.out.println("Input tidak valid untuk " + fieldName + ". Masukkan angka.");
-                scanner.nextLine(); // Bersihkan buffer
+                scanner.nextLine(); //
             }
         }
         return number;

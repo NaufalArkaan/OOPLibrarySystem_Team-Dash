@@ -76,7 +76,7 @@ public class MemberAction {
                     case 3: displayBorrowedLoans(member); break;
                     case 4: payFine(member); break;
                     case 5: borrowBookAction(member); break;
-                    case 6: returnBookAction(member); break; // Now implemented
+                    case 6: returnBookAction(member); break; //
                     case 7: logout(); break;
                     default: System.out.println("Pilihan tidak valid, coba lagi."); break;
                 }
@@ -114,7 +114,7 @@ public class MemberAction {
 
     public void displayBorrowedLoans(Member member) throws NoDataFoundException {
         System.out.println("\n=== Buku yang Saya Pinjam ===");
-        // Refresh loans from DB in case of external changes (e.g. admin return)
+        //
         ArrayList<Loan> borrowedLoans = loanDAO.getActiveLoansByUserId(member.getUserId()); //
         member.setBorrowedLoans(borrowedLoans); //
 
@@ -154,7 +154,7 @@ public class MemberAction {
             throw new BookOutOfStockException("Buku \"" + bookToBorrow.getTitle() + "\" ditemukan tetapi stok habis."); //
         }
 
-        // Check if member already borrowed this specific book and has not returned it
+        //
         if (member.findLoanByBookCode(isbn) != null) { //
             System.out.println("Anda sudah meminjam buku dengan ISBN '" + isbn + "' dan belum mengembalikannya.");
             return;
@@ -165,8 +165,8 @@ public class MemberAction {
             System.err.println("Gagal memperbarui stok buku di database. Peminjaman dibatalkan.");
             return;
         }
-        // Update local Book object's quantity as well
-        bookToBorrow.setQuantity(bookToBorrow.getQuantity() - 1); // Uses the new setQuantity method //
+        //
+        bookToBorrow.setQuantity(bookToBorrow.getQuantity() - 1); //
 
 
         Loan newLoan = new Loan(bookToBorrow, LocalDate.now()); //
@@ -182,19 +182,18 @@ public class MemberAction {
             System.err.println("Gagal mencatat peminjaman di database. Stok buku mungkin perlu dikembalikan manual.");
             // Rollback stok
             bookDAO.updateBookQuantity(bookToBorrow.getCode(), bookToBorrow.getQuantity() + 1); //
-            bookToBorrow.setQuantity(bookToBorrow.getQuantity() + 1); // Rollback local object as well //
+            bookToBorrow.setQuantity(bookToBorrow.getQuantity() + 1); //  //
         }
     }
 
     public void returnBookAction(Member member) throws NoDataFoundException, BookNotFoundException {
         System.out.println("\n=== Kembalikan Buku ===");
-        // Refresh and display borrowed loans
-        displayBorrowedLoans(member); // This will throw NoDataFoundException if no loans
+        //
+        displayBorrowedLoans(member); //
 
         ArrayList<Loan> borrowedLoans = member.getBorrowedLoans(); //
         if (borrowedLoans.isEmpty()) {
-            // displayBorrowedLoans would have already handled this by throwing NoDataFoundException
-            // but as a safeguard:
+
             System.out.println("Anda tidak memiliki buku untuk dikembalikan.");
             return;
         }
@@ -229,20 +228,14 @@ public class MemberAction {
             System.out.println("-----------------------------------------------------");
             System.out.println("Denda ini telah ditambahkan ke total denda Anda.");
             System.out.println("Silakan lakukan pembayaran melalui menu 'Bayar Denda'.");
-            member.addFee(fine); // Add to member's current fee balance //
-            // Note: UserDAO.updateMemberFee is not called here directly as it's a placeholder
-            // and assumes a 'fee' column which might not exist. The Member.fee is session-based
-            // and settled via Transaction.
+            member.addFee(fine); //  //
+
         }
 
-        // Process return:
-        // 1. Remove loan from database
+
         if (loanDAO.removeLoan(member.getUserId(), bookReturned.getCode())) { //
-            // 2. Remove loan from member's local list
             member.removeLoan(loanToReturn); //
 
-            // 3. Update book stock in database
-            // Fetch current book state to avoid race conditions with quantity
             Book currentBookState = bookDAO.findBookByCode(bookReturned.getCode()); //
             if (currentBookState != null) {
                 if (bookDAO.updateBookQuantity(currentBookState.getCode(), currentBookState.getQuantity() + 1)) { //
@@ -255,7 +248,6 @@ public class MemberAction {
                     }
                 } else {
                     System.err.println("Gagal memperbarui stok buku di database setelah pengembalian.");
-                    // Potentially rollback loan removal if critical, or flag for admin.
                 }
             } else {
                 System.err.println("Error: Tidak dapat menemukan buku " + bookReturned.getCode() + " untuk memperbarui stoknya."); //
@@ -316,7 +308,7 @@ public class MemberAction {
             System.out.println("Transaksi pembayaran telah dicatat. ID Transaksi: " + transaction.getTransactionId()); //
         } else {
             System.err.println("Gagal mencatat transaksi pembayaran di database.");
-            member.setFee(fineBeforePayment); // Rollback fee change on local member object //
+            member.setFee(fineBeforePayment);
         }
     }
 
