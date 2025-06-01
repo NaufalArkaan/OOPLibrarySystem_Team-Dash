@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.RegisterController"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
+
+    <!-- Navbar -->
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT"
+              style="-fx-background-color: #800000; -fx-padding: 10;">
+            <ImageView fitHeight="50" preserveRatio="true">
+                <image>
+                    <Image url="@../resources/images/logo.png"/>
+                </image>
+            </ImageView>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </top>
+
+    <!-- Konten utama -->
+    <center>
+        <StackPane alignment="TOP_CENTER">
+            <VBox spacing="30" maxWidth="1000" style="-fx-padding: 40;">
+                <!-- Judul rata kiri -->
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Library Membership Registration"
+                           style="-fx-font-size: 30px; -fx-font-weight: bold;"/>
+                </HBox>
+                <!-- HBox dua kolom -->
+                <HBox spacing="40" alignment="TOP_CENTER">
+
+                    <!-- Kotak kiri -->
+                    <VBox spacing="10" alignment="CENTER" prefWidth="480" prefHeight="400"
+                          style="-fx-background-color: linear-gradient(to bottom right, #a30000, #f5c7c7);
+             -fx-background-radius: 20; -fx-padding: 20;
+             -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 4);">
+                        <TextFlow textAlignment="CENTER">
+                            <Text text="Member Registration is only for members of the general public "
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                            <Text text="other than UMM Academic Community. "
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                            <Text text="If you are UMM Academic Community, please login using "
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                            <Text text="NIM and PIC for Students "
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                            <Text text="and "
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                            <Text text="UMM Email and Password for Lecturers or Employees."
+                                  style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold;"/>
+                        </TextFlow>
+                    </VBox>
+
+                    <!-- Form input -->
+                    <VBox spacing="15" alignment="TOP_LEFT" prefWidth="435" prefHeight="400"
+                          style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 20;">
+                        <VBox spacing="10" fillWidth="true">
+                            <!-- Fields seperti sebelumnya -->
+                            <VBox spacing="5">
+                                <Label text="Username"/>
+                                <TextField fx:id="usernameField" promptText="Enter your Username"
+                                           style="-fx-border-color: #7cd5e0; -fx-border-radius: 20;
+                                              -fx-background-radius: 20; -fx-padding: 8;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text="Student ID / NIM"/>
+                                <TextField fx:id="nimField" promptText="Enter your Student ID / NIM"
+                                           style="-fx-border-color: #7cd5e0; -fx-border-radius: 20;
+                                              -fx-background-radius: 20; -fx-padding: 8;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text="Major"/>
+                                <TextField fx:id="majorField" promptText="Enter your Major"
+                                           style="-fx-border-color: #7cd5e0; -fx-border-radius: 20;
+                                              -fx-background-radius: 20; -fx-padding: 8;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text="Email"/>
+                                <TextField fx:id="emailField" promptText="Enter your Email"
+                                           style="-fx-border-color: #7cd5e0; -fx-border-radius: 20;
+                                              -fx-background-radius: 20; -fx-padding: 8;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text="Password"/>
+                                <PasswordField fx:id="passwordField" promptText="Enter your Password"
+                                               style="-fx-border-color: #7cd5e0; -fx-border-radius: 20;
+                                                  -fx-background-radius: 20; -fx-padding: 8;"/>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Tombol -->
+                        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                            <!-- Tombol Cancel di kiri -->
+                            <Button text="Cancel" onAction="#handleCancel"
+                                    style="-fx-background-color: maroon; -fx-text-fill: white;
+                                           -fx-padding: 8 30; -fx-background-radius: 20;"/>
+
+                            <!-- Spacer supaya tombol Sign Up ke kanan -->
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <!-- Tombol Sign Up di kanan -->
+                            <Button text="Sign Up" onAction="#handleRegister"
+                                    style="-fx-background-color: maroon; -fx-text-fill: white;
+                                           -fx-padding: 8 30; -fx-background-radius: 20;"/>
+                        </HBox>
+
+
+                    </VBox>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>

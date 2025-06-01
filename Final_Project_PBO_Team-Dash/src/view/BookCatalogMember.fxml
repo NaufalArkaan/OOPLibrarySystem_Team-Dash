@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.BookCatalogControllerMember">
+
+    <!-- Navbar Atas -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #8B0000, #B22222); -fx-padding: 15;">
+            <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                <image>
+                    <Image url="@../resources/images/logo.png"/>
+                </image>
+            </ImageView>
+            <Label text="Perpustakaan"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnHome" text="🏠 Home"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-font-weight: bold;" />
+            <Button fx:id="btnBooks" text="📚 Books"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-font-weight: bold;" />
+            <Button fx:id="btnBorrow" text="📖 Borrow Book"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-font-weight: bold;" />
+            <Button fx:id="btnHistory" text="📋 History"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-font-weight: bold;" />
+            <Button fx:id="btnLogout" text="🔒 Logout"
+                    style="-fx-background-color: #d32f2f; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+
+    <!-- Konten Utama -->
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
+            <Label text="📚 Book Catalog"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+            <TextField fx:id="searchField" promptText="Search books..."
+                       style="-fx-pref-width: 320px; -fx-padding: 10;
+                              -fx-background-radius: 10; -fx-font-size: 14px;" />
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
+                        prefHeight="500" prefWidth="900">
+                <FlowPane fx:id="bookFlowPane" hgap="20" vgap="20" padding="10" />
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER"
+              style="-fx-background-color: linear-gradient(to right, #333, #111); -fx-padding: 15;">
+            <Label text="University of Muhammadiyah Malang"
+                   style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
