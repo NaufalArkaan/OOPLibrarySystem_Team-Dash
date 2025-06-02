@@ -24,10 +24,11 @@ public class DashboardMemberControll {
     private ListView<String> returnBook;
 
     @FXML
-    private BorderPane rootPane; // Tambahkan fx:id="rootPane" di BorderPane FXML untuk referensi ini
+    private BorderPane rootPane;
 
     @FXML
     public void initialize() {
+        // Isi ListView dengan data awal
         List<String> borrowedBooks = Arrays.asList(
                 "1. Laskar Pelangi - Andrea Hirata",
                 "2. Bumi Manusia - Pramoedya Ananta Toer",
@@ -41,7 +42,7 @@ public class DashboardMemberControll {
         );
         returnBook.getItems().addAll(booksToReturn);
 
-        // Set aksi tombol
+        // Set aksi tombol navigasi
         homeBtn.setOnAction(this::handleNavigation);
         booksBtn.setOnAction(this::handleNavigation);
         borrowBtn.setOnAction(this::handleNavigation);
@@ -49,16 +50,19 @@ public class DashboardMemberControll {
         logoutBtn.setOnAction(this::handleNavigation);
     }
 
+    @FXML
     private void handleNavigation(ActionEvent event) {
+        if (!(event.getSource() instanceof Button)) return;
+
         Button clickedBtn = (Button) event.getSource();
-        String fxmlFile = "";
+        String fxmlFile = null;
 
         switch (clickedBtn.getId()) {
             case "homeBtn":
                 fxmlFile = "/view/Home.fxml";
                 break;
             case "booksBtn":
-                fxmlFile = "/view/Books.fxml";
+                fxmlFile = "/view/BookCatalogMember.fxml"; // pastikan file ada
                 break;
             case "borrowBtn":
                 fxmlFile = "/view/BorrowBook.fxml";
@@ -69,16 +73,22 @@ public class DashboardMemberControll {
             case "logoutBtn":
                 fxmlFile = "/view/Login.fxml";
                 break;
+            default:
+                System.err.println("Unknown button id: " + clickedBtn.getId());
+                return;
         }
 
-        if (!fxmlFile.isEmpty()) {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
-                // Asumsikan rootPane adalah BorderPane utama di DashboardMember
-                rootPane.getScene().setRoot(root);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            Parent newContent = FXMLLoader.load(getClass().getResource(fxmlFile));
+            if ("logoutBtn".equals(clickedBtn.getId())) {
+                rootPane.getScene().setRoot(newContent);
+            } else {
+                rootPane.setCenter(newContent);
             }
+        } catch (IOException e) {
+            System.err.println("Failed to load FXML: " + fxmlFile);
+            e.printStackTrace();
         }
     }
+
 }

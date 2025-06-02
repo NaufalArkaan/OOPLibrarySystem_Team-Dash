@@ -5,8 +5,8 @@
 <?import javafx.scene.image.Image?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.DashboardMemberControll"
             fx:id="rootPane"
+            fx:controller="controller.DashboardMemberControll"
             prefWidth="1000" prefHeight="600"
             style="-fx-background-color: #f7f7f7;">
 
@@ -18,7 +18,7 @@
                   style="-fx-background-color: #800000; -fx-padding: 10;">
                 <ImageView fitHeight="50" preserveRatio="true">
                     <image>
-                        <Image url="@../resources/images/logo.png"/>
+                        <Image url="@/resources/images/logo.png"/>
                     </image>
                 </ImageView>
                 <Region HBox.hgrow="ALWAYS"/>
@@ -33,7 +33,8 @@
                                -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
                                -fx-text-fill: white;
                                -fx-font-size: 16px;
-                               -fx-font-weight: bold;"/>
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
                 <Button text="📚 Books" fx:id="booksBtn"
                         style="-fx-pref-width: 194px;
                                -fx-pref-height: 42px;
@@ -41,7 +42,8 @@
                                -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
                                -fx-text-fill: white;
                                -fx-font-size: 16px;
-                               -fx-font-weight: bold;"/>
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
                 <Button text="📖 Borrow Book" fx:id="borrowBtn"
                         style="-fx-pref-width: 194px;
                                -fx-pref-height: 42px;
@@ -49,7 +51,8 @@
                                -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
                                -fx-text-fill: white;
                                -fx-font-size: 16px;
-                               -fx-font-weight: bold;"/>
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
                 <Button text="📋 History" fx:id="historyBtn"
                         style="-fx-pref-width: 194px;
                                -fx-pref-height: 42px;
@@ -57,7 +60,8 @@
                                -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
                                -fx-text-fill: white;
                                -fx-font-size: 16px;
-                               -fx-font-weight: bold;"/>
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
                 <Button text="🔒 Logout" fx:id="logoutBtn"
                         style="-fx-pref-width: 194px;
                                -fx-pref-height: 42px;
@@ -65,7 +69,8 @@
                                -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
                                -fx-text-fill: white;
                                -fx-font-size: 16px;
-                               -fx-font-weight: bold;"/>
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
             </HBox>
         </VBox>
     </top>
