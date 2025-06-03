@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.mahasiswa.BorrowBookController"
+            fx:id="rootPane"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
+
+    <!-- Bagian atas -->
+    <top>
+        <VBox spacing="5">
+
+            <!-- Judul Borrow Book Form, di tengah -->
+            <HBox alignment="CENTER" style="-fx-padding: 20 0 10 0;">
+                <Label text="📖 Borrow Book Form"
+                       style="-fx-font-size: 30px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #000000;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Form di tengah -->
+    <center>
+        <VBox alignment="CENTER" style="-fx-padding: 10;">
+            <StackPane maxWidth="820" prefWidth="820"
+                       style="-fx-border-color: #ccc;
+                              -fx-border-width: 1;
+                              -fx-border-radius: 10;
+                              -fx-background-radius: 10;
+                              -fx-background-color: white;
+                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 1);">
+                <VBox spacing="20" alignment="CENTER" style="-fx-padding: 30 40;">
+                    <GridPane hgap="20" vgap="15" alignment="CENTER_LEFT">
+                        <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 16px;"/>
+                        <TextField fx:id="nameField" prefWidth="600" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-border-color: #49BBBD; -fx-border-width: 1.2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;"/>
+
+                        <Label text="Student ID:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 16px;"/>
+                        <TextField fx:id="studentIdField" prefWidth="600" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   style="-fx-border-color: #49BBBD; -fx-border-width: 1.2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;"/>
+
+                        <Label text="Class:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 16px;"/>
+                        <TextField fx:id="classField" prefWidth="600" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                   style="-fx-border-color: #49BBBD; -fx-border-width: 1.2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;"/>
+
+                        <Label text="Book Title:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-size: 16px;"/>
+                        <TextField fx:id="bookTitleField" prefWidth="600" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   style="-fx-border-color: #49BBBD; -fx-border-width: 1.2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;"/>
+
+                        <Label text="ISBN Code:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-size: 16px;"/>
+                        <TextField fx:id="isbnField" prefWidth="600" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                                   style="-fx-border-color: #49BBBD; -fx-border-width: 1.2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;"/>
+                    </GridPane>
+
+                    <HBox spacing="30" alignment="CENTER" style="-fx-padding: 25 0 0 0;">
+                        <Button text="❌ Cancel" fx:id="cancelButton" onAction="#handleCancel"
+                                style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; -fx-pref-width: 140px; -fx-background-radius: 10;"/>
+                        <Button text="✅ Submit" fx:id="submitButton" onAction="#handleSubmit"
+                                style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-pref-width: 140px; -fx-background-radius: 10;"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </center>
+</BorderPane>

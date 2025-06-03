@@ -58,7 +58,7 @@ public class LoginController {
         if (username.equals("user") && password.equals("1234")) {
             System.out.println("Login sukses!");
             try {
-                URL dashboardURL = getClass().getResource("/view/DashboardMember.fxml");
+                URL dashboardURL = getClass().getResource("/view/ViewControll.fxml");
                 System.out.println("Dashboard.fxml URL: " + dashboardURL);
 
                 if (dashboardURL == null) {

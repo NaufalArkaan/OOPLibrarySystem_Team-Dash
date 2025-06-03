@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:id="rootPane"
+            fx:controller="util.ControllView"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
+
+    <top>
+        <VBox>
+            <!-- Navbar -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #800000; -fx-padding: 10;">
+                <ImageView fitHeight="50" preserveRatio="true">
+                    <image>
+                        <Image url="@/resources/images/logo.png"/>
+                    </image>
+                </ImageView>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Tombol navigasi -->
+            <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+                <Button text="🏠 Home" fx:id="homeBtn"
+                        style="-fx-pref-width: 194px;
+                               -fx-pref-height: 42px;
+                               -fx-background-radius: 16;
+                               -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
+                <Button text="📚 Books" fx:id="booksBtn"
+                        style="-fx-pref-width: 194px;
+                               -fx-pref-height: 42px;
+                               -fx-background-radius: 16;
+                               -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
+                <Button text="📖 Borrow Book" fx:id="borrowBtn"
+                        style="-fx-pref-width: 194px;
+                               -fx-pref-height: 42px;
+                               -fx-background-radius: 16;
+                               -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
+                <Button text="📋 History" fx:id="historyBtn"
+                        style="-fx-pref-width: 194px;
+                               -fx-pref-height: 42px;
+                               -fx-background-radius: 16;
+                               -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
+                <Button text="🔒 Logout" fx:id="logoutBtn"
+                        style="-fx-pref-width: 194px;
+                               -fx-pref-height: 42px;
+                               -fx-background-radius: 16;
+                               -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;"
+                        onAction="#handleNavigation"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <AnchorPane fx:id="contentPane" />
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER"
+              style="-fx-background-color: linear-gradient(to right, #3e3e3e, #000000); -fx-padding: 15;">
+            <Label text="University of Muhammadiyah Malang"
+                   style="-fx-text-fill: lavender; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

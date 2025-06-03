@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.RegisterController"
+            fx:controller="controller.mahasiswa.RegisterController"
             prefWidth="1000" prefHeight="600"
             style="-fx-background-color: #f7f7f7;">
 

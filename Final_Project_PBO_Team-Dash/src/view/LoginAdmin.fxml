@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="controller.LoginAdminControl"
+           fx:controller="controller.admin.LoginAdminControl"
            prefWidth="900" prefHeight="600"
            alignment="CENTER">
 
