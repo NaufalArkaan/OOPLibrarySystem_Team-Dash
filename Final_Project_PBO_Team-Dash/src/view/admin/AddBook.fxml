@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.admin.AddBookController"
+            prefWidth="500" prefHeight="600"
+            style="-fx-background-color: white;">
+
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 40;">
+            <!-- Judul -->
+            <Label text="Add Book"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+
+            <!-- Tombol Tambah Gambar di kiri -->
+            <HBox alignment="CENTER_LEFT" maxWidth="400">
+                <Button fx:id="addImageButton"
+                        text="+ Add Image Book"
+                        style="-fx-background-color: #8B0000; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 16; -fx-background-radius: 6;" />
+            </HBox>
+
+            <!-- Input Title -->
+            <VBox spacing="5" maxWidth="400">
+                <Label text="Title:" />
+                <TextField fx:id="titleField" prefHeight="35" />
+            </VBox>
+
+            <!-- Input Author -->
+            <VBox spacing="5" maxWidth="400">
+                <Label text="Author:" />
+                <TextField fx:id="authorField" prefHeight="35" />
+            </VBox>
+
+            <!-- Input Category -->
+            <VBox spacing="5" maxWidth="400">
+                <Label text="Category:" />
+                <TextField fx:id="categoryField" prefHeight="35" />
+            </VBox>
+
+            <!-- Input ISBN -->
+            <VBox spacing="5" maxWidth="400">
+                <Label text="ISBN Code:" />
+                <TextField fx:id="isbnField" prefHeight="35" />
+            </VBox>
+
+            <!-- Tombol Aksi -->
+            <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                <Button fx:id="cancelButton"
+                        text="Cancel"
+                        style="-fx-background-color: #FFE082; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8 16;" />
+                <Button fx:id="saveButton"
+                        text="Add Book"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8 16;" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

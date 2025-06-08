@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.mahasiswa.EditDataController"
+            fx:id="rootPane"
+            prefWidth="480" prefHeight="580"
+            style="-fx-background-color: #ffffff;">
+
+    <VBox alignment="TOP_CENTER" spacing="20"
+          AnchorPane.topAnchor="30.0"
+          AnchorPane.leftAnchor="30.0"
+          AnchorPane.rightAnchor="30.0">
+
+        <Label text="Edit data"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #000000;" />
+
+        <VBox spacing="10" prefWidth="400">
+            <Label text="Name:" style="-fx-font-size: 14px;" />
+            <TextField fx:id="nameField"
+                       style="-fx-border-color: #94d2bd; -fx-border-radius: 6; -fx-background-radius: 6;" />
+        </VBox>
+
+        <VBox spacing="10" prefWidth="400">
+            <Label text="Class:" style="-fx-font-size: 14px;" />
+            <TextField fx:id="classField"
+                       style="-fx-border-color: #94d2bd; -fx-border-radius: 6; -fx-background-radius: 6;" />
+        </VBox>
+
+        <VBox spacing="10" prefWidth="400">
+            <Label text="Book Title:" style="-fx-font-size: 14px;" />
+            <TextField fx:id="titleField"
+                       style="-fx-border-color: #94d2bd; -fx-border-radius: 6; -fx-background-radius: 6;" />
+        </VBox>
+
+        <VBox spacing="10" prefWidth="400">
+            <Label text="ISBN Code:" style="-fx-font-size: 14px;" />
+            <TextField fx:id="isbnField"
+                       style="-fx-border-color: #94d2bd; -fx-border-radius: 6; -fx-background-radius: 6;" />
+        </VBox>
+
+        <HBox spacing="30" alignment="CENTER">
+            <Button fx:id="cancelButton" text="Cancel"
+                    style="-fx-background-color: #FFD580; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-background-radius: 10;
+                           -fx-pref-width: 100; -fx-pref-height: 35;" />
+
+            <Button fx:id="updateButton" text="Update"
+                    style="-fx-background-color: #44C4A1; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-background-radius: 10;
+                           -fx-pref-width: 100; -fx-pref-height: 35;" />
+        </HBox>
+
+        <VBox.margin>
+            <Insets top="20"/>
+        </VBox.margin>
+    </VBox>
+</AnchorPane>

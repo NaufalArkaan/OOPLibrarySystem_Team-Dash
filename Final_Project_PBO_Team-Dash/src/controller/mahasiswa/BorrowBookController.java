@@ -1,11 +1,9 @@
 package controller.mahasiswa;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -55,7 +53,7 @@ public class BorrowBookController {
 
     private void showCustomAlert(String message) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/CustomAlertBorrow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/mahasiswa/CustomAlertBorrow.fxml"));
             Parent root = loader.load();
 
             CustomAlertController controller = loader.getController();

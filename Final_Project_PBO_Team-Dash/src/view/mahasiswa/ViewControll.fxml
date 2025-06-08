@@ -7,18 +7,17 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:id="rootPane"
-            fx:controller="util.ControllView"
-            prefWidth="1000" prefHeight="600"
+            fx:controller="controller.util.mahasiswa.ControllView"
             style="-fx-background-color: #f7f7f7;">
 
     <top>
         <VBox>
             <!-- Navbar -->
             <HBox spacing="10" alignment="CENTER_LEFT"
-                  style="-fx-background-color: #800000; -fx-padding: 10;">
+                  style="-fx-background-color: linear-gradient(to right, #800000, #d1bcbc); -fx-padding: 10;">
                 <ImageView fitHeight="50" preserveRatio="true">
                     <image>
-                        <Image url="@/resources/images/logo.png"/>
+                        <Image url="@/view/images/logo.png"/>
                     </image>
                 </ImageView>
                 <Region HBox.hgrow="ALWAYS"/>
@@ -78,6 +77,7 @@
     <center>
         <AnchorPane fx:id="contentPane" />
     </center>
+
 
     <bottom>
         <HBox alignment="CENTER"

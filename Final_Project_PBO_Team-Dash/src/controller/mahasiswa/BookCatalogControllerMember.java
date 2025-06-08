@@ -97,7 +97,7 @@ public class BookCatalogControllerMember {
 
             ImageView iv = new ImageView();
             try {
-                Image img = new Image(getClass().getResourceAsStream("/resources/images/" + book.getImagePath()));
+                Image img = new Image(getClass().getResourceAsStream("/view/images/" + book.getImagePath()));
                 iv.setImage(img);
                 iv.setFitWidth(100);
                 iv.setFitHeight(150);

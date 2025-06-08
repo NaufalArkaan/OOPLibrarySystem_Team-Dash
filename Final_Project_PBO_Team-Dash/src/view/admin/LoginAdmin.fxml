@@ -13,7 +13,7 @@
         <!-- Gambar di kiri -->
         <ImageView fitHeight="500" preserveRatio="true">
             <image>
-                <Image url="@../resources/images/login.png"/>
+                <Image url="@/view/images/login.png"/>
             </image>
         </ImageView>
 

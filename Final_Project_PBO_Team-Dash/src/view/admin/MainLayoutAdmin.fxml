@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.util.admin.AdminLayoutController"
+            fx:id="rootPane"
+            prefWidth="1200" prefHeight="600"
+            style="-fx-background-color: #ffffff;">
+
+    <!-- Bagian Atas: Navbar dan Tombol Navigasi -->
+    <top>
+        <VBox>
+            <!-- Navbar -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: linear-gradient(to right, #800000, #d1bcbc); -fx-padding: 10;">
+                <ImageView fitHeight="50" preserveRatio="true">
+                    <image>
+                        <Image url="@/view/images/logo.png"/>
+                    </image>
+                </ImageView>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Tombol Navigasi -->
+            <HBox spacing="10" alignment="CENTER" style="-fx-padding: 15;">
+                <Button text="🏠 Home" fx:id="homeBtn" onAction="#handleNavigation"
+                        style="-fx-pref-width: 194px; -fx-pref-height: 42px;
+                   -fx-background-radius: 16;
+                   -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Button text="📚 Manage Books" fx:id="booksBtn" onAction="#handleNavigation"
+                        style="-fx-pref-width: 194px; -fx-pref-height: 42px;
+                   -fx-background-radius: 16;
+                   -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Button text="🔄 Return Books" fx:id="returnBtn" onAction="#handleNavigation"
+                        style="-fx-pref-width: 194px; -fx-pref-height: 42px;
+                   -fx-background-radius: 16;
+                   -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Button text="📊 Reports and Charts" fx:id="reportBtn" onAction="#handleNavigation"
+                        style="-fx-pref-width: 194px; -fx-pref-height: 42px;
+                   -fx-background-radius: 16;
+                   -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Button text="🔒 Logout" fx:id="logoutBtn" onAction="#handleNavigation"
+                        style="-fx-pref-width: 194px; -fx-pref-height: 42px;
+                   -fx-background-radius: 16;
+                   -fx-background-color: linear-gradient(to right, #8B0000, #E53935);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px; -fx-font-weight: bold;" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Konten Tengah -->
+    <center>
+        <AnchorPane fx:id="contentPane" style="-fx-padding: 20;"/>
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER"
+              style="-fx-background-color: linear-gradient(to right, #3e3e3e, #000000); -fx-padding: 15;">
+            <Label text="University of Muhammadiyah Malang"
+                   style="-fx-text-fill: lavender; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.admin.ManageBooksController"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
+
+    <!-- ================= TOP BAR ================= -->
+    <top>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="📚 Manage Books"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="searchField"
+                           promptText="🔍 Search by title, author, or ISBN"
+                           prefWidth="300"
+                           style="-fx-background-color: white;
+                                  -fx-background-radius: 20;
+                                  -fx-border-radius: 20;
+                                  -fx-border-color: #cccccc;
+                                  -fx-padding: 8 16;" />
+                <Button fx:id="btnAddBook"
+                        text="+ Add Book"
+                        style="-fx-background-color: #800000;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-padding: 8 20;" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= MAIN TABLE ================= -->
+    <center>
+        <VBox spacing="10" style="-fx-padding: 0 20 20 20;">
+            <TableView fx:id="tableView" prefHeight="500">
+                <columns>
+                    <TableColumn fx:id="colNo" text="No" prefWidth="50"/>
+                    <TableColumn fx:id="colTitle" text="Title" prefWidth="200"/>
+                    <TableColumn fx:id="colAuthor" text="Author" prefWidth="150"/>
+                    <TableColumn fx:id="colCategory" text="Category" prefWidth="100"/>
+                    <TableColumn fx:id="colISBN" text="ISBN" prefWidth="100"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+</BorderPane>

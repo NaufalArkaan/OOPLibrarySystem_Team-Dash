@@ -7,47 +7,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import main.Main;
+import controller.util.mahasiswa.UserDatabase;
 import java.io.IOException;
 import java.net.URL;
 
 public class LoginController {
 
-    @FXML
-    private TextField usernameField;
+    @FXML private Hyperlink signUpLink;
+    @FXML private Hyperlink adminLoginLink;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
 
     @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private void handleLogin() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
-        if (username.equals("user") && password.equals("1234")) {
-            System.out.println("Login sukses!");
-        } else {
-            System.out.println("Login gagal!");
-        }
-    }
-
-    @FXML
-    private void handleSingUpLink(ActionEvent event) {
-        try {
-            Parent registerPage = FXMLLoader.load(getClass().getResource("/view/Register.fxml"));
-            Main.mainScene.setRoot(registerPage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void handleSignUpLink(ActionEvent event) {
+        loadScene("/view/mahasiswa/Register.fxml", "Register - UMM Library Access", 1200, 600);
     }
 
     @FXML
     private void handleAdminLoginLink(ActionEvent event) {
-        try {
-            Parent adminLoginPage = FXMLLoader.load(getClass().getResource("/view/LoginAdmin.fxml"));
-            Main.mainScene.setRoot(adminLoginPage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadScene("/view/admin/LoginAdmin.fxml", "Admin Login - UMM Library Access", 1200, 600);
+        Main.getPrimaryStage().setMinWidth(900);
+        Main.getPrimaryStage().setMinHeight(600);
     }
 
     @FXML
@@ -55,28 +35,38 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if (username.equals("user") && password.equals("1234")) {
+        if (UserDatabase.isValidUser(username, password)) {
             System.out.println("Login sukses!");
-            try {
-                URL dashboardURL = getClass().getResource("/view/ViewControll.fxml");
-                System.out.println("Dashboard.fxml URL: " + dashboardURL);
 
-                if (dashboardURL == null) {
-                    System.out.println("ERROR: Dashboard.fxml tidak ditemukan!");
-                    return;
-                }
+            // Jangan langsung load DashboardMember.fxml
+            // Tapi load MainLayout.fxml yang punya navbar dan content pane
+            loadScene("/view/mahasiswa/ViewControll.fxml", "Dashboard - UMM Library Access", 1200, 800);
+            Main.getPrimaryStage().setMaximized(true);
 
-                Parent dashboardRoot = FXMLLoader.load(dashboardURL);
-                Main.mainScene.setRoot(dashboardRoot);
-                Main.primaryStage.setTitle("Dashboard - UMM Library Access");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } else {
             System.out.println("Login gagal!");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Login Gagal");
+            alert.setHeaderText(null);
+            alert.setContentText("Username atau password salah!");
+            alert.showAndWait();
         }
     }
 
-
+    private void loadScene(String fxmlPath, String title, double width, double height) {
+        try {
+            URL resource = getClass().getResource(fxmlPath);
+            if (resource == null) {
+                System.err.println("ERROR: FXML file not found: " + fxmlPath);
+                return;
+            }
+            Parent root = FXMLLoader.load(resource);
+            Scene scene = new Scene(root, width, height);
+            Main.getPrimaryStage().setScene(scene);
+            Main.getPrimaryStage().setTitle(title);
+            Main.getPrimaryStage().show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
-

@@ -7,7 +7,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.mahasiswa.RegisterController"
-            prefWidth="1000" prefHeight="600"
+            prefWidth="1200" prefHeight="600"
             style="-fx-background-color: #f7f7f7;">
 
     <!-- Navbar -->
@@ -16,7 +16,7 @@
               style="-fx-background-color: #800000; -fx-padding: 10;">
             <ImageView fitHeight="50" preserveRatio="true">
                 <image>
-                    <Image url="@../resources/images/logo.png"/>
+                    <Image url="@/view/images/logo.png"/>
                 </image>
             </ImageView>
             <Region HBox.hgrow="ALWAYS"/>
