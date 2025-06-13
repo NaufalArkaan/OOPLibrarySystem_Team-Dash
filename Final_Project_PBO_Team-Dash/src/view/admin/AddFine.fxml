@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.admin.AddFineController"
+            prefWidth="400" prefHeight="300"
+            style="-fx-background-color: white;">
+
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
+            <!-- Judul -->
+            <Label text="Add Fine"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+
+            <!-- Input Name -->
+            <VBox spacing="5" maxWidth="300">
+                <Label text="Name:" />
+                <TextField fx:id="nameField" prefHeight="35" editable="false" />
+            </VBox>
+
+            <!-- Input Student ID -->
+            <VBox spacing="5" maxWidth="300">
+                <Label text="Student ID:" />
+                <TextField fx:id="studentIdField" prefHeight="35" editable="false" />
+            </VBox>
+
+            <!-- Input Fine Amount -->
+            <VBox spacing="5" maxWidth="300">
+                <Label text="Fine Amount:" />
+                <TextField fx:id="fineField" prefHeight="35" />
+            </VBox>
+
+            <!-- Tombol Aksi -->
+            <HBox spacing="20" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                <Button fx:id="cancelButton"
+                        text="Cancel"
+                        style="-fx-background-color: #FF6B6B; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8 24; -fx-background-radius: 8;" />
+                <Button fx:id="submitButton"
+                        text="Submit"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8 24; -fx-background-radius: 8;" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

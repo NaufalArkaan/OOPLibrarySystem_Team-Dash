@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.admin.ReportsAndChartsController"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
+
+    <!-- ================= TOP BAR ================= -->
+    <top>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="📊 Reports And Charts"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="searchField"
+                           promptText="🔍 Search by name, student ID, or book title"
+                           prefWidth="300"
+                           style="-fx-background-color: white;
+                                  -fx-background-radius: 20;
+                                  -fx-border-radius: 20;
+                                  -fx-border-color: #cccccc;
+                                  -fx-padding: 8 16;" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= MAIN TABLE ================= -->
+    <center>
+        <VBox spacing="10" style="-fx-padding: 0 20 20 20;">
+            <TableView fx:id="tableView" prefHeight="500">
+                <columns>
+                    <TableColumn fx:id="colNo" text="No" prefWidth="50"/>
+                    <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120"/>
+                    <TableColumn fx:id="colMemberName" text="Member Name" prefWidth="150"/>
+                    <TableColumn fx:id="colBorrowDate" text="Borrow Date" prefWidth="100"/>
+                    <TableColumn fx:id="colReturnDate" text="Return Date" prefWidth="100"/>
+                    <TableColumn fx:id="colTotalBorrowed" text="Total Borrowed" prefWidth="100"/>
+                    <TableColumn fx:id="colFine" text="Fine" prefWidth="100"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="colActions" text="Action" prefWidth="80"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+</BorderPane>

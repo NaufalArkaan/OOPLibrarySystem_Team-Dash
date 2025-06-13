@@ -30,7 +30,7 @@ public class NavigationHelperAdmin {
                 fxmlFile = "/view/admin/ReturnBooks.fxml";
                 break;
             case "reportBtn":
-                fxmlFile = "/view/admin/Reports.fxml";
+                fxmlFile = "/view/admin/ReportsAndCharts.fxml";
                 break;
             default:
                 System.err.println("[ADMIN NAVIGATION] Unknown button id: " + buttonId);
