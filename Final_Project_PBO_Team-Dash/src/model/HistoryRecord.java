@@ -1,4 +1,4 @@
-package controller.model;
+package model;
 
 /**
  * Model data untuk menyimpan riwayat peminjaman buku oleh mahasiswa.

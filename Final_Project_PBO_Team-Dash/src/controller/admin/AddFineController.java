@@ -6,7 +6,7 @@ import SQL_DATA.LoanDAO;
 import SQL_DATA.TransactionDAO;
 import SQL_DATA.UserDAO;
 import User.Member;
-import controller.model.ReturnRecord;
+import model.ReturnRecord;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;

@@ -1,4 +1,4 @@
-package controller.model;
+package model;
 
 /**
  * Model class untuk merepresentasikan data Buku.

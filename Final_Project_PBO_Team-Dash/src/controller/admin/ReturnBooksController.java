@@ -8,7 +8,7 @@ import SQL_DATA.TransactionDAO;
 import SQL_DATA.UserDAO;
 import User.Member;
 import Action.Transaction;
-import controller.model.ReturnRecord;
+import model.ReturnRecord;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,7 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
