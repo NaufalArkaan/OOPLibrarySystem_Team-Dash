@@ -7,25 +7,42 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class UserDAO {
 
-    /**
-     * Mencari pengguna berdasarkan username dan password untuk proses login.
-     * Mengembalikan objek Admin atau Member tergantung pada 'role' di database.
-     */
+    public boolean registerMember(Member member) {
+        String sql = "INSERT INTO users (username, password, role, email, major, id_member) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, member.getUsername());
+            pstmt.setString(2, member.getPassword());
+            pstmt.setString(3, "Member");
+            pstmt.setString(4, member.getEmail());
+            pstmt.setString(5, member.getMajor());
+            pstmt.setString(6, member.getStudentId());
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1062) {
+                System.err.println("Registrasi gagal: Username '" + member.getUsername() + "' atau ID Member sudah ada.");
+            } else {
+                System.err.println("Error saat mendaftarkan member baru: " + e.getMessage());
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
+
     public User findUserByCredentials(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        User user = null;
-
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
             pstmt.setString(2, password);
-
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -33,31 +50,27 @@ public class UserDAO {
                 String dbUsername = rs.getString("username");
                 String dbPassword = rs.getString("password");
                 String role = rs.getString("role");
-                String name = rs.getString("username"); // Asumsi nama diambil dari username
                 String email = rs.getString("email");
                 String major = rs.getString("major");
                 String studentId = rs.getString("id_member");
 
+                String name = dbUsername;
+
                 if ("Admin".equalsIgnoreCase(role)) {
-                    // Konstruktor Admin tidak butuh major dan studentId
-                    user = new Admin(userId, dbUsername, dbPassword, name, email);
+                    return new Admin(userId, dbUsername, dbPassword, name, email);
                 } else if ("Member".equalsIgnoreCase(role)) {
-                    user = new Member(userId, dbUsername, dbPassword, name, email, major, studentId);
+                    return new Member(userId, dbUsername, dbPassword, name, email, major, studentId);
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error saat mencari user berdasarkan kredensial: " + e.getMessage());
         }
-        return user;
+        return null;
     }
 
-    /**
-     * Mengambil semua pengguna dengan role 'Member' dari database.
-     */
     public ArrayList<Member> getAllMembers() {
         ArrayList<Member> members = new ArrayList<>();
         String sql = "SELECT * FROM users WHERE role = 'Member'";
-
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -67,7 +80,7 @@ public class UserDAO {
                         rs.getInt("user_id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getString("username"), // Nama diambil dari kolom username
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("major"),
                         rs.getString("id_member")
@@ -79,14 +92,8 @@ public class UserDAO {
         return members;
     }
 
-    /**
-     * METODE BARU: Mencari satu member spesifik berdasarkan user_id-nya.
-     * Digunakan oleh ReturnBooksController untuk mendapatkan detail peminjam.
-     */
     public Member findMemberById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ? AND role = 'Member'";
-        Member member = null;
-
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -94,11 +101,11 @@ public class UserDAO {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                member = new Member(
+                return new Member(
                         rs.getInt("user_id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getString("username"), // Asumsi nama diambil dari username
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("major"),
                         rs.getString("id_member")
@@ -107,6 +114,6 @@ public class UserDAO {
         } catch (SQLException e) {
             System.err.println("Error saat mencari member by ID: " + e.getMessage());
         }
-        return member;
+        return null;
     }
 }

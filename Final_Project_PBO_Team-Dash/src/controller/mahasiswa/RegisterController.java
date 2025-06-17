@@ -1,6 +1,7 @@
 package controller.mahasiswa;
 
-import controller.util.mahasiswa.UserDatabase;
+import SQL_DATA.UserDAO;
+import User.Member;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +20,8 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
+    private final UserDAO userDAO = new UserDAO();
+
     @FXML
     private void handleRegister(ActionEvent event) {
         String username = usernameField.getText().trim();
@@ -28,20 +31,18 @@ public class RegisterController {
         String password = passwordField.getText();
 
         if (username.isEmpty() || nim.isEmpty() || major.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", null, "Semua field harus diisi!");
+            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", "Semua field harus diisi!");
             return;
         }
 
-        if (UserDatabase.userExists(username)) {
-            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", null, "Username sudah digunakan, coba yang lain.");
-            return;
+        Member newMember = new Member(username, password, username, email, major, nim);
+
+        if (userDAO.registerMember(newMember)) {
+            showAlert(Alert.AlertType.INFORMATION, "Registrasi Berhasil", "Akun berhasil dibuat! Silakan login.");
+            goToLoginScene();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", "Username '" + username + "' sudah digunakan. Silakan coba yang lain.");
         }
-
-        UserDatabase.addUser(username, password);
-
-        showAlert(Alert.AlertType.INFORMATION, "Registrasi Berhasil", null, "Akun berhasil dibuat! Silakan login.");
-
-        goToLoginScene();
     }
 
     @FXML
@@ -51,29 +52,20 @@ public class RegisterController {
 
     private void goToLoginScene() {
         try {
-            System.out.println("Loading Login.fxml...");
             Parent loginPage = FXMLLoader.load(getClass().getResource("/view/Login.fxml"));
-            System.out.println("Loaded Login.fxml");
             Scene loginScene = new Scene(loginPage, 1200, 600);
-
             Main.getPrimaryStage().setScene(loginScene);
-
-            // Maksimalkan window supaya fullscreen (optional)
-            Main.getPrimaryStage().setMaximized(true);
-
             Main.getPrimaryStage().setTitle("Login - UMM Library Access");
-            System.out.println("Switched to login scene.");
-
+            Main.getPrimaryStage().setMaximized(true);
         } catch (IOException e) {
-            System.err.println("Error loading Login.fxml:");
             e.printStackTrace();
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }
