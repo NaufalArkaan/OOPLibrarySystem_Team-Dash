@@ -19,7 +19,7 @@ public class AddBookController {
     @FXML private TextField authorField;
     @FXML private TextField categoryField;
     @FXML private TextField isbnField;
-    @FXML private TextField quantityField; // <-- PERUBAHAN: Dari Spinner menjadi TextField
+    @FXML private TextField quantityField;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
     @FXML private Button addImageButton;
@@ -31,7 +31,6 @@ public class AddBookController {
 
     @FXML
     public void initialize() {
-        // Tidak perlu lagi setup untuk Spinner
         saveButton.setOnAction(e -> saveBook());
         cancelButton.setOnAction(e -> closeWindow());
         addImageButton.setOnAction(e -> handleAddImage());
@@ -47,8 +46,6 @@ public class AddBookController {
         isbnField.setText(book.getCode());
         isbnField.setEditable(false);
         this.imageData = book.getImage();
-
-        // PERUBAHAN: Mengatur teks pada quantityField
         quantityField.setText(String.valueOf(book.getQuantity()));
     }
 
@@ -59,7 +56,6 @@ public class AddBookController {
         String isbn = isbnField.getText();
         int quantity;
 
-        // PERUBAHAN: Mengambil nilai dari TextField dan mengubahnya menjadi angka
         try {
             quantity = Integer.parseInt(quantityField.getText());
             if (quantity < 0) {

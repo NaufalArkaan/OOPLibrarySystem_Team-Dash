@@ -11,7 +11,9 @@ import java.util.ArrayList;
 
 public class UserDAO {
 
+
     public boolean registerMember(Member member) {
+
         String sql = "INSERT INTO users (username, password, role, email, major, id_member) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -36,6 +38,7 @@ public class UserDAO {
         }
     }
 
+
     public User findUserByCredentials(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = DatabaseUtil.getConnection();
@@ -54,6 +57,7 @@ public class UserDAO {
                 String major = rs.getString("major");
                 String studentId = rs.getString("id_member");
 
+
                 String name = dbUsername;
 
                 if ("Admin".equalsIgnoreCase(role)) {
@@ -67,6 +71,7 @@ public class UserDAO {
         }
         return null;
     }
+
 
     public ArrayList<Member> getAllMembers() {
         ArrayList<Member> members = new ArrayList<>();
@@ -91,6 +96,7 @@ public class UserDAO {
         }
         return members;
     }
+
 
     public Member findMemberById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ? AND role = 'Member'";

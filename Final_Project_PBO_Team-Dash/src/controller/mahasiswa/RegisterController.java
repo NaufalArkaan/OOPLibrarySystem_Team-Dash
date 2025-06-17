@@ -1,7 +1,7 @@
 package controller.mahasiswa;
 
-import SQL_DATA.UserDAO;
-import User.Member;
+import SQL_DATA.UserDAO; // <-- Ganti import dari UserDatabase ke UserDAO
+import User.Member; // <-- Import kelas Member
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,6 +20,7 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
+    // Buat instance dari UserDAO
     private final UserDAO userDAO = new UserDAO();
 
     @FXML
@@ -35,8 +36,11 @@ public class RegisterController {
             return;
         }
 
-        Member newMember = new Member(username, password, username, email, major, nim);
+        // PERBAIKAN: Buat objek Member baru dari data form
+        // Kita menggunakan konstruktor kedua di Member yang tidak memerlukan userId
+        Member newMember = new Member(username, password, username, email, major, nim); // Nama disamakan dengan username untuk sementara
 
+        // PERBAIKAN: Panggil metode registerMember dari UserDAO
         if (userDAO.registerMember(newMember)) {
             showAlert(Alert.AlertType.INFORMATION, "Registrasi Berhasil", "Akun berhasil dibuat! Silakan login.");
             goToLoginScene();
