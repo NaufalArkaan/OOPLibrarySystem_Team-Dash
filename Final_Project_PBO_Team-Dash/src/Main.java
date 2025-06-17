@@ -1,7 +1,7 @@
 //// Di dalam file Main.java
 //import User.Admin;
 //import User.Member;
-//// User.User tidak lagi digunakan untuk list statis
+
 //import User.Register;
 //import Action.AdminAction;
 //import Action.MemberAction;
