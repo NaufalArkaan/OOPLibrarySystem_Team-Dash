@@ -92,10 +92,9 @@ Proyek ini dikerjakan selama 4 minggu dengan pembagian tugas sebagai berikut:
 ---
 
 ## 📲 Database yang Digunakan
-🧩 Pengantar
-Pada project Sistem Perpustakaan Berbasis GUI ini, database yang digunakan adalah MySQL. MySQL adalah sistem manajemen basis data relasional (RDBMS) yang populer dan handal, digunakan untuk menyimpan dan mengelola data aplikasi secara efisien.
+🧩 Pada project Sistem Perpustakaan Berbasis GUI ini, database yang digunakan adalah MySQL. MySQL adalah sistem manajemen basis data relasional (RDBMS) yang populer dan handal, digunakan untuk menyimpan dan mengelola data aplikasi secara efisien.
 
-🗄️ Apa Itu MySQL?
+🗄️ Apa Itu MySQL?,
 MySQL adalah sistem manajemen basis data open-source yang menggunakan bahasa SQL (Structured Query Language) untuk mengelola data. MySQL dikenal karena performa tinggi, skalabilitas, dan kemudahan integrasi dengan berbagai bahasa pemrograman, termasuk Java yang digunakan dalam project ini.
 
 🔧 Peran MySQL dalam Project Sistem Perpustakaan GUI
