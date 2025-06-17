@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
-        showLoginView(); // Halaman pertama yang ditampilkan
+        showLoginView();
     }
 
     public static Stage getPrimaryStage() {
@@ -27,9 +27,16 @@ public class Main extends Application {
         setScene(root, "Login - UMM Library Access");
     }
 
-    public static void showMemberView() throws Exception {
-        Parent root = FXMLLoader.load(Main.class.getResource("/view/mahasiswa/DashboardMember.fxml"));
-        setScene(root, "Dashboard Member");
+    public static void showAdminView() throws Exception {
+        Parent root = FXMLLoader.load(Main.class.getResource("/view/admin/MainLayoutAdmin.fxml"));
+        setScene(root, "Admin Dashboard - UMM Library");
+    }
+
+    // ==== PASTIKAN METODE INI ADA DAN TEPAT SEPERTI INI ====
+    public static void showAdminLoginView() throws Exception {
+        // Pastikan path FXML ini sudah benar: /view/admin/LoginAdmin.fxml
+        Parent root = FXMLLoader.load(Main.class.getResource("/view/admin/LoginAdmin.fxml"));
+        setScene(root, "Admin Login - UMM Library Access");
     }
 
     public static void showRegistrationView() throws Exception {
@@ -39,7 +46,7 @@ public class Main extends Application {
 
     private static void setScene(Parent root, String title) {
         primaryStage.setTitle(title);
-        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setScene(new Scene(root, 1200, 800));
 
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX(bounds.getMinX());

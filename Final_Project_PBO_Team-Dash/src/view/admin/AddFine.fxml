@@ -16,6 +16,14 @@
             <Label text="Add Fine"
                    style="-fx-font-size: 26px; -fx-font-weight: bold;" />
 
+            <!-- Ganti aksinya -->
+            <Label text="Action:">
+                <VBox.margin>
+                    <Insets top="15.0" />
+                </VBox.margin>
+            </Label>
+            <ComboBox fx:id="actionTypeComboBox" prefWidth="Infinity" />
+
             <!-- Input Name -->
             <VBox spacing="5" maxWidth="300">
                 <Label text="Name:" />
@@ -31,7 +39,7 @@
             <!-- Input Fine Amount -->
             <VBox spacing="5" maxWidth="300">
                 <Label text="Fine Amount:" />
-                <TextField fx:id="fineField" prefHeight="35" />
+                <TextField fx:id="fineAmountField" prefHeight="35" />
             </VBox>
 
             <!-- Tombol Aksi -->

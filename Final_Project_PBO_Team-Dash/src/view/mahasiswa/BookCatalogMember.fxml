@@ -3,56 +3,58 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:id="contentPane"
+<BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.mahasiswa.BookCatalogControllerMember"
-            prefWidth="1000" prefHeight="600">
+            fx:id="rootPane"
+            prefWidth="1000" prefHeight="600"
+            style="-fx-background-color: #f7f7f7;">
 
-    <BorderPane fx:id="rootPane" prefWidth="1000" prefHeight="600"
-                AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
-                style="-fx-background-color: #f7f7f7;">
+    <!-- ===================== TOP ====================== -->
+    <top>
+        <VBox spacing="10"> <!-- tambahkan spacing di sini -->
 
-        <!-- ===================== TOP ====================== -->
-        <top>
-            <VBox spacing="10">
-                <StackPane alignment="TOP_CENTER" style="-fx-padding: 0 20;">
-                    <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="1000">
-                        <Label text="📚 Book Catalog"
-                               style="-fx-font-size: 28px; -fx-font-weight: bold;" />
-                        <Region HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="searchField"
-                                   promptText="🔍 Search..."
-                                   prefWidth="300"
-                                   maxWidth="300"
-                                   alignment="CENTER_LEFT"
-                                   style="-fx-background-color: #ffffff;
-                                          -fx-background-radius: 20;
-                                          -fx-padding: 8 16;
-                                          -fx-border-radius: 20;
-                                          -fx-border-color: #cccccc;" />
-                    </HBox>
-                </StackPane>
-            </VBox>
-        </top>
+            <StackPane alignment="TOP_CENTER" style="-fx-padding: 0 20;">
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="1000">
+                    <!-- Label kiri -->
+                    <Label text="📚 Book Catalog"
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;" />
 
-        <!-- ===================== CENTER ====================== -->
-        <center>
-            <VBox spacing="20" style="-fx-padding: 10;" prefHeight="500" maxHeight="500" minHeight="500">
-                <ScrollPane fitToWidth="true"
-                            style="-fx-background-color: transparent;"
-                            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
-                    <FlowPane fx:id="bookContainer" hgap="30" vgap="30" alignment="CENTER"
-                              style="-fx-padding: 20;" />
-                </ScrollPane>
+                    <!-- Spacer untuk dorong search ke kanan -->
+                    <Region HBox.hgrow="ALWAYS" />
 
-                <HBox spacing="20" alignment="CENTER">
-                    <Button fx:id="btnLeft" text="⏪ Prev"
-                            style="-fx-font-size: 14px; -fx-background-color: #800000; -fx-text-fill: white;" />
-                    <Button fx:id="btnRight" text="Next ⏩"
-                            style="-fx-font-size: 14px; -fx-background-color: #800000; -fx-text-fill: white;" />
+                    <!-- Search bar kanan -->
+                    <TextField fx:id="searchField"
+                               promptText="🔍 Search..."
+                               prefWidth="300"
+                               maxWidth="300"
+                               alignment="CENTER_LEFT"
+                               style="-fx-background-color: #ffffff;
+                          -fx-background-radius: 20;
+                          -fx-padding: 8 16;
+                          -fx-border-radius: 20;
+                          -fx-border-color: #cccccc;" />
                 </HBox>
-            </VBox>
-        </center>
-    </BorderPane>
-</AnchorPane>
+            </StackPane>
+        </VBox>
+    </top>
+
+    <!-- ===================== CENTER ====================== -->
+    <center>
+        <VBox spacing="20" style="-fx-padding: 10;" prefHeight="500" maxHeight="500" minHeight="500">
+            <ScrollPane fitToWidth="true"
+                        style="-fx-background-color: transparent;"
+                        hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <FlowPane fx:id="bookContainer" hgap="30" vgap="30" alignment="CENTER"
+                          style="-fx-padding: 20;" />
+            </ScrollPane>
+
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="btnLeft" text="⏪ Prev"
+                        style="-fx-font-size: 14px; -fx-background-color: #800000; -fx-text-fill: white; -fx-min-width: 80px; -fx-max-width: 80px;" />
+                <Button fx:id="btnRight" text="Next ⏩"
+                        style="-fx-font-size: 14px; -fx-background-color: #800000; -fx-text-fill: white; -fx-min-width: 80px; -fx-max-width: 80px;" />
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>

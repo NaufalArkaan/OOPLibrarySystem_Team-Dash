@@ -44,6 +44,7 @@
                     <TableColumn fx:id="colAuthor" text="Author" prefWidth="150"/>
                     <TableColumn fx:id="colCategory" text="Category" prefWidth="100"/>
                     <TableColumn fx:id="colISBN" text="ISBN" prefWidth="100"/>
+                    <TableColumn fx:id="colQuantity" prefWidth="75.0" text="Quantity" />
                     <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
                     <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
                 </columns>

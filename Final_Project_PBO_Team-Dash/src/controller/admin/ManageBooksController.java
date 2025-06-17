@@ -1,17 +1,21 @@
 package controller.admin;
 
+import Data.Book;
+import SQL_DATA.BookDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
-import javafx.geometry.Pos;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import controller.model.Book;
-import controller.model.SharedBookData;
 
 import java.io.IOException;
 
@@ -23,84 +27,68 @@ public class ManageBooksController {
     @FXML private TableColumn<Book, String> colAuthor;
     @FXML private TableColumn<Book, String> colCategory;
     @FXML private TableColumn<Book, String> colISBN;
+    @FXML private TableColumn<Book, Integer> colQuantity;
     @FXML private TableColumn<Book, String> colStatus;
     @FXML private TableColumn<Book, Void> colActions;
-
     @FXML private TextField searchField;
     @FXML private Button btnAddBook;
 
-    private ObservableList<Book> books;
+    private final BookDAO bookDAO = new BookDAO();
+    private final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        books = SharedBookData.getBooks();
-
-        tableView.getColumns().clear();
-        tableView.getColumns().addAll(colNo, colTitle, colAuthor, colCategory, colISBN, colStatus, colActions);
+        setupTableColumns();
+        loadBooks();
+        setupSearchFilter();
+        btnAddBook.setOnAction(e -> openBookForm(null));
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
 
-        colNo.setMinWidth(40);
-        colNo.setMaxWidth(60);
-        colNo.setStyle("-fx-alignment: CENTER;");
-        colTitle.setStyle("-fx-alignment: CENTER;");
-        colAuthor.setStyle("-fx-alignment: CENTER;");
-        colCategory.setStyle("-fx-alignment: CENTER;");
-        colISBN.setStyle("-fx-alignment: CENTER;");
-        colStatus.setStyle("-fx-alignment: CENTER;");
+    private void setupTableColumns() {
+        colNo.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(bookList.indexOf(cellData.getValue()) + 1).asObject());
+        setColumnAlignment(colNo, Pos.CENTER);
 
-        colNo.setCellValueFactory(new PropertyValueFactory<>("no"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        setColumnAlignment(colTitle, Pos.CENTER_LEFT);
+
         colAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
+        setColumnAlignment(colAuthor, Pos.CENTER_LEFT);
+
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        colISBN.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        setColumnAlignment(colCategory, Pos.CENTER);
+
+        colISBN.setCellValueFactory(new PropertyValueFactory<>("code"));
+        setColumnAlignment(colISBN, Pos.CENTER);
+
+        colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        setColumnAlignment(colQuantity, Pos.CENTER);
+
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        setColumnAlignment(colStatus, Pos.CENTER);
 
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button editBtn = new Button("✏️ Edit");
-            private final Button deleteBtn = new Button("🗑️ Delete");
+            private final Button deleteBtn = new Button("🗑️ Hapus");
+            private final HBox pane = new HBox(5, editBtn, deleteBtn);
 
             {
-                editBtn.setStyle("-fx-background-color: #C3F5D5; -fx-text-fill: black; -fx-background-radius: 8;");
-                deleteBtn.setStyle("-fx-background-color: #F5C3C3; -fx-text-fill: black; -fx-background-radius: 8;");
+                pane.setAlignment(Pos.CENTER);
+                editBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+                deleteBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
 
                 editBtn.setOnAction(event -> {
                     Book book = getTableView().getItems().get(getIndex());
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddBook.fxml"));
-                        Parent root = loader.load();
-
-                        AddBookController controller = loader.getController();
-                        controller.setBookToEdit(book);
-
-                        Stage stage = new Stage();
-                        stage.setTitle("Edit Buku");
-                        stage.setScene(new Scene(root));
-
-                        // Refresh tabel saat window edit ditutup
-                        stage.setOnHiding(e -> tableView.refresh());
-
-                        stage.show();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        showInfoAlert("Error", "Gagal membuka form edit buku.");
-                    }
+                    openBookForm(book);
                 });
-
                 deleteBtn.setOnAction(event -> {
                     Book book = getTableView().getItems().get(getIndex());
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                    confirm.setTitle("Delete Book");
-                    confirm.setHeaderText("Are you sure you want to delete this book?");
-                    confirm.setContentText("Title: " + book.getTitle());
-
-                    ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-                    ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
-                    confirm.getButtonTypes().setAll(yes, no);
-
-                    confirm.showAndWait().ifPresent(response -> {
-                        if (response == yes) {
-                            books.remove(book);
-                            showInfoAlert("Delete Book", "Book '" + book.getTitle() + "' has been deleted.");
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Anda yakin ingin menghapus buku '" + book.getTitle() + "'?", ButtonType.YES, ButtonType.NO);
+                    alert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.YES) {
+                            if (bookDAO.deleteBook(book.getCode())) {
+                                loadBooks();
+                            }
                         }
                     });
                 });
@@ -109,48 +97,77 @@ public class ManageBooksController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox box = new HBox(10, editBtn, deleteBtn);
-                    box.setAlignment(Pos.CENTER);
-                    setGraphic(box);
-                }
-            }
-        });
-
-        tableView.setItems(books);
-
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            String keyword = newVal.toLowerCase();
-            ObservableList<Book> filtered = books.filtered(book ->
-                    book.getTitle().toLowerCase().contains(keyword) ||
-                            book.getAuthor().toLowerCase().contains(keyword) ||
-                            book.getIsbn().toLowerCase().contains(keyword)
-            );
-            tableView.setItems(filtered);
-        });
-
-        btnAddBook.setOnAction(e -> {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddBook.fxml"));
-                Parent root = loader.load();
-                Stage stage = new Stage();
-                stage.setTitle("Tambah Buku");
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                showInfoAlert("Error", "Gagal membuka form tambah buku.");
+                setGraphic(empty ? null : pane);
             }
         });
     }
 
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private <T> void setColumnAlignment(TableColumn<Book, T> column, Pos alignment) {
+        column.setCellFactory(col -> new TableCell<Book, T>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item.toString());
+                    setAlignment(alignment);
+                }
+            }
+        });
+    }
+
+    private void loadBooks() {
+        bookList.setAll(bookDAO.getAllBooks());
+        tableView.setItems(bookList);
+    }
+
+    private void setupSearchFilter() {
+        FilteredList<Book> filteredData = new FilteredList<>(bookList, b -> true);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(book -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (book.getTitle().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (book.getAuthor().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (book.getCode().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false;
+            });
+        });
+
+        SortedList<Book> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedData);
+    }
+
+    private void openBookForm(Book book) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddBook.fxml"));
+            Parent root = loader.load();
+
+            AddBookController controller = loader.getController();
+            if (book != null) {
+                controller.setBookToEdit(book);
+            }
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(book != null ? "Edit Buku" : "Tambah Buku Baru");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            loadBooks();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

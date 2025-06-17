@@ -1,50 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.admin.ReportsAndChartsController"
-            prefWidth="1000" prefHeight="600"
-            style="-fx-background-color: #f7f7f7;">
-
-    <!-- ================= TOP BAR ================= -->
-    <top>
-        <VBox spacing="10" style="-fx-padding: 20;">
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="📊 Reports And Charts"
-                       style="-fx-font-size: 28px; -fx-font-weight: bold;" />
-                <Region HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="searchField"
-                           promptText="🔍 Search by name, student ID, or book title"
-                           prefWidth="300"
-                           style="-fx-background-color: white;
-                                  -fx-background-radius: 20;
-                                  -fx-border-radius: 20;
-                                  -fx-border-color: #cccccc;
-                                  -fx-padding: 8 16;" />
-            </HBox>
-        </VBox>
-    </top>
-
-    <!-- ================= MAIN TABLE ================= -->
-    <center>
-        <VBox spacing="10" style="-fx-padding: 0 20 20 20;">
-            <TableView fx:id="tableView" prefHeight="500">
-                <columns>
-                    <TableColumn fx:id="colNo" text="No" prefWidth="50"/>
-                    <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120"/>
-                    <TableColumn fx:id="colMemberName" text="Member Name" prefWidth="150"/>
-                    <TableColumn fx:id="colBorrowDate" text="Borrow Date" prefWidth="100"/>
-                    <TableColumn fx:id="colReturnDate" text="Return Date" prefWidth="100"/>
-                    <TableColumn fx:id="colTotalBorrowed" text="Total Borrowed" prefWidth="100"/>
-                    <TableColumn fx:id="colFine" text="Fine" prefWidth="100"/>
-                    <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
-                    <TableColumn fx:id="colActions" text="Action" prefWidth="80"/>
-                </columns>
-            </TableView>
-        </VBox>
-    </center>
-
-</BorderPane>
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.ReportsAndChartsController">
+    <children>
+        <Label layoutX="32.0" layoutY="28.0" text="Laporan Peminjaman Buku" textFill="#40c4c4">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <TextField fx:id="searchField" layoutX="678.0" layoutY="32.0" promptText="Cari data..." AnchorPane.rightAnchor="32.0" />
+        <TableView fx:id="tableView" layoutX="32.0" layoutY="80.0" prefHeight="492.0" prefWidth="836.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="80.0">
+            <columns>
+                <TableColumn fx:id="colNo" prefWidth="40.0" text="No" />
+                <TableColumn fx:id="colStudentId" prefWidth="100.0" text="Student ID" />
+                <TableColumn fx:id="colMemberName" prefWidth="150.0" text="Member Name" />
+                <TableColumn fx:id="colBorrowDate" prefWidth="110.0" text="Borrow Date" />
+                <TableColumn fx:id="colReturnDate" prefWidth="110.0" text="Return Date" />
+                <TableColumn fx:id="colTotalBorrowed" prefWidth="100.0" text="Total Borrowed" />
+                <TableColumn fx:id="colFine" prefWidth="90.0" text="Fine" />
+                <TableColumn fx:id="colStatus" prefWidth="100.0" text="Status" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</AnchorPane>

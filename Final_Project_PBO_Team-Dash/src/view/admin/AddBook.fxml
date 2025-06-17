@@ -47,6 +47,12 @@
                 <TextField fx:id="isbnField" prefHeight="35" />
             </VBox>
 
+            <!-- Input ISBN -->
+            <VBox spacing="5" maxWidth="400">
+                <Label text="Stok:" />
+                <TextField fx:id="quantityField" prefHeight="35" />
+            </VBox>
+
             <!-- Tombol Aksi -->
             <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                 <Button fx:id="cancelButton"

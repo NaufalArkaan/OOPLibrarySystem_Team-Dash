@@ -8,12 +8,16 @@
             prefWidth="1000" prefHeight="600"
             style="-fx-background-color: #f7f7f7;">
 
-
-    <!-- Konten utama -->
     <center>
         <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 100 30 30 30;">
+
+            <Label fx:id="welcomeLabel"
+                   text="Selamat Datang"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;"
+                   alignment="CENTER_LEFT"
+                   prefHeight="30"/>
+
             <HBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 0 60;">
-                <!-- Bagian kiri -->
                 <VBox spacing="10" alignment="TOP_LEFT">
                     <Label text="📖 Books Currently Borrowed:"
                            style="-fx-pref-width: 380px;
@@ -28,7 +32,6 @@
                     <ListView fx:id="borrowedBooksList" prefHeight="200" prefWidth="380"/>
                 </VBox>
 
-                <!-- Bagian kanan -->
                 <VBox spacing="10" alignment="TOP_LEFT">
                     <Label text="⏳ Return Book List:"
                            style="-fx-pref-width: 380px;

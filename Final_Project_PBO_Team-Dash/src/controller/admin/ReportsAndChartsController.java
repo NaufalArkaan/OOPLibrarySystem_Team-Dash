@@ -1,22 +1,23 @@
 package controller.admin;
 
+import Data.Loan;
+import SQL_DATA.BookDAO;
+import SQL_DATA.LoanDAO;
+import SQL_DATA.UserDAO;
+import User.Member;
 import controller.model.ReturnRecord;
-import controller.model.SharedReturnData;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.geometry.Pos;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
-import java.io.IOException;
+import javafx.scene.paint.Color;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class ReportsAndChartsController {
 
@@ -29,141 +30,146 @@ public class ReportsAndChartsController {
     @FXML private TableColumn<ReturnRecord, Integer> colTotalBorrowed;
     @FXML private TableColumn<ReturnRecord, String> colFine;
     @FXML private TableColumn<ReturnRecord, String> colStatus;
-    @FXML private TableColumn<ReturnRecord, Void> colActions;
+    // Kolom Action sudah dihapus sesuai permintaan sebelumnya
+
     @FXML private TextField searchField;
 
-    private ObservableList<ReturnRecord> reports;
+    private final LoanDAO loanDAO = new LoanDAO();
+    private final UserDAO userDAO = new UserDAO();
+    private final BookDAO bookDAO = new BookDAO();
+
+    private final ObservableList<ReturnRecord> reportList = FXCollections.observableArrayList();
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @FXML
     public void initialize() {
-        reports = SharedReturnData.getReturnRecords();
         setupTableColumns();
-        setupSearchField();
-        tableView.setItems(reports);
+        loadReportsFromDatabase();
+        setupSearchFilter();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void setupTableColumns() {
+        // --- PERBAIKAN UTAMA: Mengatur perataan untuk semua kolom ---
+
         colNo.setCellValueFactory(new PropertyValueFactory<>("no"));
-        centerAlignColumn(colNo);
+        setColumnAlignment(colNo, Pos.CENTER);
 
         colStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
-        centerAlignColumn(colStudentId);
+        setColumnAlignment(colStudentId, Pos.CENTER);
 
         colMemberName.setCellValueFactory(new PropertyValueFactory<>("memberName"));
-        centerAlignColumn(colMemberName);
-
-        colBorrowDate.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getBorrowDateFormatted()));
-        centerAlignColumn(colBorrowDate);
-
-        colReturnDate.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getReturnDateFormatted()));
-        centerAlignColumn(colReturnDate);
+        setColumnAlignment(colMemberName, Pos.CENTER); // Diubah menjadi tengah
 
         colTotalBorrowed.setCellValueFactory(new PropertyValueFactory<>("totalBorrowed"));
-        centerAlignColumn(colTotalBorrowed);
+        setColumnAlignment(colTotalBorrowed, Pos.CENTER);
 
         colFine.setCellValueFactory(new PropertyValueFactory<>("fine"));
-        centerAlignColumn(colFine);
+        setColumnAlignment(colFine, Pos.CENTER);
 
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        centerAlignColumn(colStatus);
+        colStatus.setCellFactory(column -> createStatusCell());
 
-        colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button addFineBtn = new Button();
+        colBorrowDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getBorrowDate().format(formatter)
+        ));
+        setColumnAlignment(colBorrowDate, Pos.CENTER);
 
-            {
-                ImageView icon = new ImageView("/view/images/pensil.png");
-                icon.setFitHeight(16);
-                icon.setFitWidth(16);
-                addFineBtn.setGraphic(icon);
-                addFineBtn.setStyle("-fx-background-color: transparent;");
-                addFineBtn.setOnAction(event -> {
-                    ReturnRecord report = getTableView().getItems().get(getIndex());
-                    if (report != null) {
-                        openAddFineDialog(report);
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox box = new HBox(addFineBtn);
-                    box.setAlignment(Pos.CENTER);
-                    setGraphic(box);
-                }
-            }
-        });
+        colReturnDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                (cellData.getValue().getActualReturnDate() != null) ?
+                        cellData.getValue().getActualReturnDate().format(formatter) :
+                        cellData.getValue().getReturnDate().format(formatter)
+        ));
+        setColumnAlignment(colReturnDate, Pos.CENTER);
     }
 
-    private <T> void centerAlignColumn(TableColumn<ReturnRecord, T> column) {
+    /**
+     * Metode helper baru untuk mengatur perataan kolom.
+     */
+    private <T> void setColumnAlignment(TableColumn<ReturnRecord, T> column, Pos alignment) {
         column.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(T item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
+                    setText(null);
                     setGraphic(null);
                 } else {
-                    Label label = new Label(item.toString());
-                    label.setMaxWidth(Double.MAX_VALUE);
-                    label.setAlignment(Pos.CENTER);
-                    HBox box = new HBox(label);
-                    box.setAlignment(Pos.CENTER);
-                    box.setMaxWidth(Double.MAX_VALUE);
-                    setGraphic(box);
+                    setText(item.toString());
+                    setAlignment(alignment);
                 }
             }
         });
     }
 
-    private void setupSearchField() {
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            String keyword = newVal.toLowerCase().trim();
-            if (keyword.isEmpty()) {
-                tableView.setItems(reports);
-            } else {
-                ObservableList<ReturnRecord> filtered = reports.filtered(report ->
-                        report.getMemberName().toLowerCase().contains(keyword) ||
-                                report.getStudentId().toLowerCase().contains(keyword)
-                );
-                tableView.setItems(filtered);
+    /**
+     * Metode helper untuk kustomisasi sel Status.
+     */
+    private TableCell<ReturnRecord, String> createStatusCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if ("Returned".equalsIgnoreCase(item)) {
+                        setTextFill(Color.GREEN);
+                        setStyle("-fx-font-weight: bold;");
+                    } else {
+                        setTextFill(Color.ORANGERED);
+                        setStyle("-fx-font-weight: bold;");
+                    }
+                    setAlignment(Pos.CENTER);
+                }
             }
+        };
+    }
+
+    private void setupSearchFilter() {
+        FilteredList<ReturnRecord> filteredData = new FilteredList<>(reportList, p -> true);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(record -> {
+                if (newValue == null || newValue.isEmpty()) return true;
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (record.getMemberName().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (record.getStudentId().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (record.getBookTitle().toLowerCase().contains(lowerCaseFilter)) return true;
+                return false;
+            });
         });
+        SortedList<ReturnRecord> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedData);
     }
 
-    private void openAddFineDialog(ReturnRecord report) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddFine.fxml"));
-            Parent root = loader.load();
+    private void loadReportsFromDatabase() {
+        reportList.clear();
+        ArrayList<Loan> allLoans = loanDAO.getAllLoansWithDetails();
+        int counter = 1;
 
-            AddFineController controller = loader.getController();
-            if (controller != null) {
-                controller.setData(report);
+        for (Loan loan : allLoans) {
+            Member member = userDAO.findMemberById(loan.getUserId());
+            if (member != null) {
+                ReturnRecord record = new ReturnRecord(
+                        counter++,
+                        member.getStudentId(),
+                        member.getName(),
+                        loan.getBook().getTitle(),
+                        loan.getBorrowDate(),
+                        loan.getDueDate(),
+                        "Rp " + String.format("%,.0f", loan.getFine()),
+                        loan.getStatus(),
+                        loan.getQuantity()
+                );
+                record.setUserId(member.getUserId());
+                record.setBookCode(loan.getBook().getCode());
+                record.setLoanId(loan.getLoanId());
+                record.setActualReturnDate(loan.getActualReturnDate());
+                reportList.add(record);
             }
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Add Fine");
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setScene(new Scene(root));
-            dialogStage.showAndWait();
-
-            tableView.refresh();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Gagal membuka dialog Add Fine.");
         }
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

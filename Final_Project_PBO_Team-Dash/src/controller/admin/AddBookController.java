@@ -1,13 +1,17 @@
 package controller.admin;
 
+import Data.Book;
+import SQL_DATA.BookDAO;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import javafx.stage.Window;
-import controller.model.Book;
-import controller.model.SharedBookData;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class AddBookController {
 
@@ -15,98 +19,113 @@ public class AddBookController {
     @FXML private TextField authorField;
     @FXML private TextField categoryField;
     @FXML private TextField isbnField;
-
+    @FXML private TextField quantityField; // <-- PERUBAHAN: Dari Spinner menjadi TextField
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
     @FXML private Button addImageButton;
 
-    private File selectedImageFile;
-    private Book selectedBookToEdit = null;
+    private Book bookToEdit = null;
+    private boolean isEditing = false;
+    private final BookDAO bookDAO = new BookDAO();
+    private byte[] imageData;
 
     @FXML
     public void initialize() {
-        saveButton.setOnAction(e -> saveOrUpdateBook());
-        cancelButton.setOnAction(e -> clearForm());
-        addImageButton.setOnAction(e -> chooseImage());
+        // Tidak perlu lagi setup untuk Spinner
+        saveButton.setOnAction(e -> saveBook());
+        cancelButton.setOnAction(e -> closeWindow());
+        addImageButton.setOnAction(e -> handleAddImage());
     }
 
     public void setBookToEdit(Book book) {
-        if (book != null) {
-            this.selectedBookToEdit = book;
-            titleField.setText(book.getTitle());
-            authorField.setText(book.getAuthor());
-            categoryField.setText(book.getCategory());
-            isbnField.setText(book.getIsbn());
-            saveButton.setText("Update Book");
-        }
+        this.bookToEdit = book;
+        this.isEditing = true;
+
+        titleField.setText(book.getTitle());
+        authorField.setText(book.getAuthor());
+        categoryField.setText(book.getCategory());
+        isbnField.setText(book.getCode());
+        isbnField.setEditable(false);
+        this.imageData = book.getImage();
+
+        // PERUBAHAN: Mengatur teks pada quantityField
+        quantityField.setText(String.valueOf(book.getQuantity()));
     }
 
-    private void saveOrUpdateBook() {
+    private void saveBook() {
         String title = titleField.getText();
         String author = authorField.getText();
         String category = categoryField.getText();
         String isbn = isbnField.getText();
+        int quantity;
 
-        if (title.isEmpty() || author.isEmpty() || category.isEmpty() || isbn.isEmpty()) {
-            showAlert("Validation Failed", "All fields must be filled.");
+        // PERUBAHAN: Mengambil nilai dari TextField dan mengubahnya menjadi angka
+        try {
+            quantity = Integer.parseInt(quantityField.getText());
+            if (quantity < 0) {
+                showAlert(Alert.AlertType.ERROR, "Input Salah", "Kuantitas tidak boleh negatif.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Input Salah", "Harap masukkan angka yang valid untuk kuantitas.");
             return;
         }
 
-        if (selectedBookToEdit != null) {
-            // Update mode: buat objek baru dengan data baru, tetap pakai no dan status lama
-            Book updatedBook = new Book(
-                    selectedBookToEdit.getNo(),
-                    title,
-                    author,
-                    category,
-                    isbn,
-                    selectedBookToEdit.getStatus()
-            );
-
-            int index = SharedBookData.getBooks().indexOf(selectedBookToEdit);
-            if (index >= 0) {
-                SharedBookData.getBooks().set(index, updatedBook);
-                showAlert("Success", "Book updated successfully.");
-            } else {
-                showAlert("Error", "Book to update not found.");
-            }
-        } else {
-            // Add mode
-            int no = SharedBookData.getBooks().size() + 1;
-            Book newBook = new Book(no, title, author, category, isbn, "Tersedia");
-            SharedBookData.getBooks().add(newBook);
-            showAlert("Success", "Book added successfully.");
+        if (title.isEmpty() || author.isEmpty() || category.isEmpty() || isbn.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Semua field teks harus diisi!");
+            return;
         }
 
-        clearForm();
+        String status = (quantity > 0) ? "Available" : "Borrowed";
+
+        if (isEditing) {
+            Book updatedBook = new Book(bookToEdit.getCode(), title, author, category, this.imageData, status, quantity);
+            boolean success = bookDAO.updateBook(updatedBook);
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Data buku berhasil diperbarui.");
+                closeWindow();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Gagal", "Gagal memperbarui data buku.");
+            }
+        } else {
+            Book newBook = new Book(isbn, title, author, category, this.imageData, status, quantity);
+            boolean success = bookDAO.addBook(newBook);
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Buku baru berhasil ditambahkan.");
+                closeWindow();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Gagal", "Gagal menambahkan buku baru. Mungkin ISBN sudah ada.");
+            }
+        }
     }
 
-    private void chooseImage() {
+    private void closeWindow() {
+        Stage stage = (Stage) saveButton.getScene().getWindow();
+        stage.close();
+    }
+
+    private void handleAddImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Book Image");
+        fileChooser.setTitle("Pilih Gambar Buku");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
-        Window window = addImageButton.getScene().getWindow();
-        selectedImageFile = fileChooser.showOpenDialog(window);
 
-        if (selectedImageFile != null) {
-            showAlert("Image Selected", "File: " + selectedImageFile.getName());
+        File selectedFile = fileChooser.showOpenDialog(addImageButton.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                this.imageData = Files.readAllBytes(selectedFile.toPath());
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Gambar berhasil dipilih: " + selectedFile.getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Gagal", "Tidak dapat membaca file gambar.");
+            }
         }
     }
 
-    private void clearForm() {
-        titleField.clear();
-        authorField.clear();
-        categoryField.clear();
-        isbnField.clear();
-        selectedImageFile = null;
-        selectedBookToEdit = null;
-        saveButton.setText("Add Book");
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

@@ -2,7 +2,8 @@ package controller.admin;
 
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import controller.model.SharedBookData;
+import SQL_DATA.BookDAO;
+import SQL_DATA.LoanDAO;
 
 public class DashboardController {
 
@@ -12,17 +13,21 @@ public class DashboardController {
     @FXML
     private Text borrowedBooksText;
 
+    private final BookDAO bookDAO = new BookDAO();
+    private final LoanDAO loanDAO = new LoanDAO();
+
     @FXML
     public void initialize() {
-        // Ambil data dari SharedBookData dan tampilkan
-        int totalBooks = SharedBookData.getTotalBooks();
-        int borrowedBooks = SharedBookData.getBorrowedBooksCount();
-        updateDashboard(totalBooks, borrowedBooks);
+        // Mengambil data dari sumber yang benar
+        int totalCopies = bookDAO.getTotalBookCopiesCount();
+        int totalTitles = bookDAO.getTotalBookTitlesCount();
+        int borrowedCount = loanDAO.getTotalActiveLoans(); // Panggilan ini sekarang valid
+
+        updateDashboard(totalCopies, totalTitles, borrowedCount);
     }
 
-    // Digunakan saat ingin update manual dari luar
-    public void updateDashboard(int totalBooks, int borrowedBooks) {
-        totalBooksText.setText("📚 Total Books: " + totalBooks);
-        borrowedBooksText.setText("📚 Borrowed: " + borrowedBooks);
+    public void updateDashboard(int totalCopies, int totalTitles, int borrowedCount) {
+        totalBooksText.setText("📚 Total Buku: " + totalCopies + " (" + totalTitles + " Judul)");
+        borrowedBooksText.setText("📤 Buku Dipinjam: " + borrowedCount);
     }
 }
