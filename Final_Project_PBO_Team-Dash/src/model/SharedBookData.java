@@ -1,4 +1,4 @@
-package controller.model;
+package model;
 
 import Data.Book; // Menggunakan kelas Book dari package Data
 

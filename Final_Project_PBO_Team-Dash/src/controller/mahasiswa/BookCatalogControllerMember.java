@@ -2,7 +2,7 @@ package controller.mahasiswa;
 
 import Data.Book;
 import SQL_DATA.BookDAO;
-import controller.model.SharedBookData;
+import model.SharedBookData;
 import controller.util.mahasiswa.NavigationHelper;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
