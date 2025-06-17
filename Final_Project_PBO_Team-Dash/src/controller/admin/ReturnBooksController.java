@@ -94,11 +94,8 @@ public class ReturnBooksController {
                         refreshTableFromDatabase();
                         return;
                     }
-                    if (loanToReturn.calculateFine() > 0) {
-                        handleFinePayment(loanToReturn);
-                    } else {
-                        processReturn(loanToReturn);
-                    }
+                    // Proses pengembalian hanya jika tidak ada denda
+                    processReturn(loanToReturn);
                 });
 
                 fineBtn.setOnAction(event -> {
@@ -111,7 +108,26 @@ public class ReturnBooksController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : actionButtons);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                } else {
+                    // --- PERBAIKAN UTAMA DI SINI ---
+                    ReturnRecord record = getTableRow().getItem();
+                    // Mengambil nilai denda dari record
+                    String fineText = record.getFine();
+                    // Membersihkan format "Rp " dan koma untuk mendapatkan angka
+                    double fineValue = 0;
+                    try {
+                        fineValue = Double.parseDouble(fineText.replaceAll("[^\\d.]", ""));
+                    } catch (NumberFormatException e) {
+                        // Abaikan jika format tidak valid
+                    }
+
+                    // Menonaktifkan tombol "Return" jika denda lebih dari 0
+                    returnBtn.setDisable(fineValue > 0);
+
+                    setGraphic(actionButtons);
+                }
             }
         });
     }
@@ -145,43 +161,6 @@ public class ReturnBooksController {
             }
         }
         return null;
-    }
-
-    private void handleFinePayment(Loan loan) {
-        double fineAmount = loan.calculateFine();
-        loanDAO.updateLoanFine(loan.getLoanId(), fineAmount);
-
-        TextInputDialog dialog = new TextInputDialog(String.valueOf(fineAmount));
-        dialog.setTitle("Pembayaran Denda");
-        dialog.setHeaderText("Buku terlambat dikembalikan!\nTotal Denda: Rp " + String.format("%,.0f", fineAmount));
-        dialog.setContentText("Masukkan jumlah dibayar:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(amountPaidStr -> {
-            try {
-                double amountPaid = Double.parseDouble(amountPaidStr);
-                if (amountPaid < 0) {
-                    showErrorAlert("Input Tidak Valid", "Jumlah bayar tidak boleh negatif.");
-                    return;
-                }
-
-                Member member = userDAO.findMemberById(loan.getUserId());
-
-                // PERBAIKAN: Hitung sisa denda di sini
-                double fineAfterPayment = fineAmount - amountPaid;
-                if (fineAfterPayment < 0) {
-                    fineAfterPayment = 0; // Sisa denda tidak boleh negatif
-                }
-
-                Transaction transaction = new Transaction(member, amountPaid, fineAmount, fineAfterPayment);
-                transactionDAO.addTransaction(transaction);
-
-                processReturn(loan);
-
-            } catch (NumberFormatException e) {
-                showErrorAlert("Input Tidak Valid", "Silakan masukkan angka yang benar.");
-            }
-        });
     }
 
     private void processReturn(Loan loan) {

@@ -1,152 +1,106 @@
 package controller.admin;
 
+import Action.Transaction;
 import Data.Loan;
-import SQL_DATA.BookDAO;
 import SQL_DATA.LoanDAO;
+import SQL_DATA.TransactionDAO;
 import SQL_DATA.UserDAO;
 import User.Member;
 import controller.model.ReturnRecord;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ReportsAndChartsController {
 
-    @FXML private TableView<ReturnRecord> tableView;
-    @FXML private TableColumn<ReturnRecord, Integer> colNo;
-    @FXML private TableColumn<ReturnRecord, String> colStudentId;
-    @FXML private TableColumn<ReturnRecord, String> colMemberName;
-    @FXML private TableColumn<ReturnRecord, String> colBorrowDate;
-    @FXML private TableColumn<ReturnRecord, String> colReturnDate;
-    @FXML private TableColumn<ReturnRecord, Integer> colTotalBorrowed;
-    @FXML private TableColumn<ReturnRecord, String> colFine;
-    @FXML private TableColumn<ReturnRecord, String> colStatus;
-    // Kolom Action sudah dihapus sesuai permintaan sebelumnya
+    private enum ReportType {
+        LOANS, TRANSACTIONS
+    }
 
-    @FXML private TextField searchField;
+    @FXML private Label titleLabel;
+    @FXML private TableView tableView;
+    @FXML private Button btnPrev;
+    @FXML private Button btnNext;
 
     private final LoanDAO loanDAO = new LoanDAO();
     private final UserDAO userDAO = new UserDAO();
-    private final BookDAO bookDAO = new BookDAO();
+    private final TransactionDAO transactionDAO = new TransactionDAO();
 
-    private final ObservableList<ReturnRecord> reportList = FXCollections.observableArrayList();
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter loanDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter transactionDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    private ReportType currentReport = ReportType.LOANS;
 
     @FXML
     public void initialize() {
-        setupTableColumns();
-        loadReportsFromDatabase();
-        setupSearchFilter();
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        setupAndLoadLoanReport();
+        btnPrev.setDisable(true);
     }
 
-    private void setupTableColumns() {
-        // --- PERBAIKAN UTAMA: Mengatur perataan untuk semua kolom ---
+    @FXML
+    private void handlePrev() {
+        if (currentReport == ReportType.TRANSACTIONS) {
+            setupAndLoadLoanReport();
+            currentReport = ReportType.LOANS;
+            btnPrev.setDisable(true);
+            btnNext.setDisable(false);
+            titleLabel.setText("Laporan Peminjaman Buku");
+        }
+    }
+
+    @FXML
+    private void handleNext() {
+        if (currentReport == ReportType.LOANS) {
+            setupAndLoadTransactionReport();
+            currentReport = ReportType.TRANSACTIONS;
+            btnPrev.setDisable(false);
+            btnNext.setDisable(true);
+            titleLabel.setText("Laporan Transaksi Pembayaran Denda");
+        }
+    }
+
+    private void setupAndLoadLoanReport() {
+        tableView.getColumns().clear();
+
+        TableColumn<ReturnRecord, Integer> colNo = new TableColumn<>("No");
+        TableColumn<ReturnRecord, String> colStudentId = new TableColumn<>("Student ID");
+        TableColumn<ReturnRecord, String> colMemberName = new TableColumn<>("Member Name");
+        TableColumn<ReturnRecord, String> colBorrowDate = new TableColumn<>("Borrow Date");
+        TableColumn<ReturnRecord, String> colReturnDate = new TableColumn<>("Return Date");
+        TableColumn<ReturnRecord, Integer> colTotalBorrowed = new TableColumn<>("Total Borrowed");
+        TableColumn<ReturnRecord, String> colFine = new TableColumn<>("Fine");
+        TableColumn<ReturnRecord, String> colStatus = new TableColumn<>("Status");
+
+        tableView.getColumns().addAll(colNo, colStudentId, colMemberName, colBorrowDate, colReturnDate, colTotalBorrowed, colFine, colStatus);
 
         colNo.setCellValueFactory(new PropertyValueFactory<>("no"));
-        setColumnAlignment(colNo, Pos.CENTER);
-
         colStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
-        setColumnAlignment(colStudentId, Pos.CENTER);
-
         colMemberName.setCellValueFactory(new PropertyValueFactory<>("memberName"));
-        setColumnAlignment(colMemberName, Pos.CENTER); // Diubah menjadi tengah
-
         colTotalBorrowed.setCellValueFactory(new PropertyValueFactory<>("totalBorrowed"));
-        setColumnAlignment(colTotalBorrowed, Pos.CENTER);
-
         colFine.setCellValueFactory(new PropertyValueFactory<>("fine"));
-        setColumnAlignment(colFine, Pos.CENTER);
-
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colStatus.setCellFactory(column -> createStatusCell());
 
-        colBorrowDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().getBorrowDate().format(formatter)
-        ));
-        setColumnAlignment(colBorrowDate, Pos.CENTER);
+        colBorrowDate.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBorrowDate().format(loanDateFormatter)));
+        colReturnDate.setCellValueFactory(cellData -> new SimpleStringProperty((cellData.getValue().getActualReturnDate() != null) ? cellData.getValue().getActualReturnDate().format(loanDateFormatter) : cellData.getValue().getReturnDate().format(loanDateFormatter)));
 
-        colReturnDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
-                (cellData.getValue().getActualReturnDate() != null) ?
-                        cellData.getValue().getActualReturnDate().format(formatter) :
-                        cellData.getValue().getReturnDate().format(formatter)
-        ));
-        setColumnAlignment(colReturnDate, Pos.CENTER);
+        colStatus.setCellFactory(column -> createLoanStatusCell());
+
+        loadLoanReportData();
     }
 
-    /**
-     * Metode helper baru untuk mengatur perataan kolom.
-     */
-    private <T> void setColumnAlignment(TableColumn<ReturnRecord, T> column, Pos alignment) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item.toString());
-                    setAlignment(alignment);
-                }
-            }
-        });
-    }
-
-    /**
-     * Metode helper untuk kustomisasi sel Status.
-     */
-    private TableCell<ReturnRecord, String> createStatusCell() {
-        return new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    if ("Returned".equalsIgnoreCase(item)) {
-                        setTextFill(Color.GREEN);
-                        setStyle("-fx-font-weight: bold;");
-                    } else {
-                        setTextFill(Color.ORANGERED);
-                        setStyle("-fx-font-weight: bold;");
-                    }
-                    setAlignment(Pos.CENTER);
-                }
-            }
-        };
-    }
-
-    private void setupSearchFilter() {
-        FilteredList<ReturnRecord> filteredData = new FilteredList<>(reportList, p -> true);
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(record -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (record.getMemberName().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (record.getStudentId().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (record.getBookTitle().toLowerCase().contains(lowerCaseFilter)) return true;
-                return false;
-            });
-        });
-        SortedList<ReturnRecord> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
-        tableView.setItems(sortedData);
-    }
-
-    private void loadReportsFromDatabase() {
-        reportList.clear();
+    private void loadLoanReportData() {
+        ObservableList<ReturnRecord> reportList = FXCollections.observableArrayList();
         ArrayList<Loan> allLoans = loanDAO.getAllLoansWithDetails();
         int counter = 1;
 
@@ -154,22 +108,125 @@ public class ReportsAndChartsController {
             Member member = userDAO.findMemberById(loan.getUserId());
             if (member != null) {
                 ReturnRecord record = new ReturnRecord(
-                        counter++,
-                        member.getStudentId(),
-                        member.getName(),
-                        loan.getBook().getTitle(),
-                        loan.getBorrowDate(),
-                        loan.getDueDate(),
-                        "Rp " + String.format("%,.0f", loan.getFine()),
-                        loan.getStatus(),
-                        loan.getQuantity()
+                        counter++, member.getStudentId(), member.getName(), loan.getBook().getTitle(),
+                        loan.getBorrowDate(), loan.getDueDate(), "Rp " + String.format("%,.0f", loan.getFine()),
+                        loan.getStatus(), loan.getQuantity()
                 );
-                record.setUserId(member.getUserId());
-                record.setBookCode(loan.getBook().getCode());
-                record.setLoanId(loan.getLoanId());
                 record.setActualReturnDate(loan.getActualReturnDate());
                 reportList.add(record);
             }
         }
+        tableView.setItems(reportList);
+    }
+
+    private void setupAndLoadTransactionReport() {
+        tableView.getColumns().clear();
+
+        TableColumn<Transaction, Integer> colNo = new TableColumn<>("Nomor");
+        TableColumn<Transaction, String> colName = new TableColumn<>("Nama");
+        TableColumn<Transaction, String> colStudentId = new TableColumn<>("Student ID");
+        TableColumn<Transaction, String> colFine = new TableColumn<>("Jumlah Bayar");
+        TableColumn<Transaction, String> colDate = new TableColumn<>("Tanggal Transaksi");
+        TableColumn<Transaction, String> colStatus = new TableColumn<>("Status Denda");
+
+        tableView.getColumns().addAll(colNo, colName, colStudentId, colFine, colDate, colStatus);
+
+        // --- PERBAIKAN UTAMA DI SINI ---
+        // Menerapkan perataan tengah untuk semua kolom
+        setTransactionColumnAlignment(colNo, Pos.CENTER);
+        colNo.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(getIndex() + 1));
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+
+        setTransactionColumnAlignment(colName, Pos.CENTER);
+        colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMember().getName()));
+
+        setTransactionColumnAlignment(colStudentId, Pos.CENTER);
+        colStudentId.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMember().getStudentId()));
+
+        setTransactionColumnAlignment(colFine, Pos.CENTER);
+        colFine.setCellValueFactory(cellData -> new SimpleStringProperty("Rp " + String.format("%,.0f", cellData.getValue().getAmountPaid())));
+
+        setTransactionColumnAlignment(colDate, Pos.CENTER);
+        colDate.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTransactionDateTime().format(transactionDateFormatter)));
+
+        colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().getFineAfterPayment() == 0 ? "Lunas" : "Belum Lunas"
+        ));
+        colStatus.setCellFactory(column -> createTransactionStatusCell());
+
+        loadTransactionReportData();
+    }
+
+    private void loadTransactionReportData() {
+        ObservableList<Transaction> transactionList = FXCollections.observableArrayList();
+        transactionList.setAll(transactionDAO.getAllTransactions());
+        tableView.setItems(transactionList);
+    }
+
+    private TableCell<ReturnRecord, String> createLoanStatusCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null); setStyle("");
+                } else {
+                    setText(item);
+                    if ("Returned".equalsIgnoreCase(item)) {
+                        setTextFill(Color.GREEN);
+                    } else {
+                        setTextFill(Color.ORANGERED);
+                    }
+                    setStyle("-fx-font-weight: bold;");
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        };
+    }
+
+    private TableCell<Transaction, String> createTransactionStatusCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null); setStyle("");
+                } else {
+                    setText(item);
+                    if ("Lunas".equalsIgnoreCase(item)) {
+                        setTextFill(Color.GREEN);
+                    } else {
+                        setTextFill(Color.ORANGERED);
+                    }
+                    setStyle("-fx-font-weight: bold;");
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        };
+    }
+
+    private <T> void setTransactionColumnAlignment(TableColumn<Transaction, T> column, Pos alignment) {
+        column.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                    setAlignment(alignment);
+                }
+            }
+        });
     }
 }

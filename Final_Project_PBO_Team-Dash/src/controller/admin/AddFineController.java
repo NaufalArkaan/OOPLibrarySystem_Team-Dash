@@ -1,6 +1,7 @@
 package controller.admin;
 
 import Action.Transaction;
+import Data.Loan;
 import SQL_DATA.LoanDAO;
 import SQL_DATA.TransactionDAO;
 import SQL_DATA.UserDAO;
@@ -16,27 +17,25 @@ import javafx.stage.Stage;
 
 public class AddFineController {
 
-    // Deklarasi disesuaikan dengan fx:id di FXML baru Anda
     @FXML private TextField nameField;
     @FXML private TextField studentIdField;
     @FXML private ComboBox<String> actionTypeComboBox;
-    @FXML private TextField fineAmountField; // Mengganti nama dari amountField
-    @FXML private Button submitButton; // Mengganti nama dari saveFineButton
+    @FXML private TextField fineAmountField;
+    @FXML private Button submitButton;
     @FXML private Button cancelButton;
-    @FXML private Label infoLabel; // Tetap dideklarasikan untuk keamanan
+    @FXML private Label infoLabel;
 
     private ReturnRecord currentRecord;
     private final LoanDAO loanDAO = new LoanDAO();
     private final UserDAO userDAO = new UserDAO();
     private final TransactionDAO transactionDAO = new TransactionDAO();
+    private Loan currentLoanFromDB;
 
     @FXML
     public void initialize() {
-        // Mengisi pilihan pada ComboBox
         actionTypeComboBox.getItems().addAll("Add/Update Fine", "Pay Fine");
-        actionTypeComboBox.setValue("Add/Update Fine"); // Nilai default
+        actionTypeComboBox.setValue("Add/Update Fine");
 
-        // Menghubungkan tombol ke metode
         submitButton.setOnAction(e -> handleSubmit());
         cancelButton.setOnAction(e -> closeWindow());
     }
@@ -44,11 +43,19 @@ public class AddFineController {
     public void setLoanData(ReturnRecord record) {
         this.currentRecord = record;
 
-        nameField.setText(record.getMemberName());
-        studentIdField.setText(record.getStudentId());
+        this.currentLoanFromDB = loanDAO.getAllActiveLoansWithDetails().stream()
+                .filter(loan -> loan.getLoanId() == record.getLoanId())
+                .findFirst()
+                .orElse(null);
 
-        String numericFine = record.getFine().replaceAll("[^\\d.]", "");
-        fineAmountField.setText(numericFine);
+        if (this.currentLoanFromDB != null) {
+            nameField.setText(record.getMemberName());
+            studentIdField.setText(record.getStudentId());
+            fineAmountField.setText(String.format("%.0f", this.currentLoanFromDB.getFine()));
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Data pinjaman tidak dapat ditemukan di database.");
+            closeWindow();
+        }
     }
 
     @FXML
@@ -87,35 +94,47 @@ public class AddFineController {
     }
 
     private void handlePayFine() {
+        if (this.currentLoanFromDB == null) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Tidak ada data pinjaman yang valid untuk diproses.");
+            return;
+        }
+
         try {
             double paymentAmount = Double.parseDouble(fineAmountField.getText());
             if (paymentAmount <= 0) {
-                showAlert(Alert.AlertType.ERROR, "Invalid Input", "Payment amount must be greater than zero.");
+                showAlert(Alert.AlertType.ERROR, "Input Tidak Valid", "Jumlah pembayaran harus lebih dari nol.");
                 return;
             }
 
             Member member = userDAO.findMemberById(currentRecord.getUserId());
             if (member == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Member data not found.");
+                showAlert(Alert.AlertType.ERROR, "Error", "Data member tidak ditemukan.");
                 return;
             }
 
-            double fineBeforePayment = Double.parseDouble(currentRecord.getFine().replaceAll("[^\\d.]", ""));
+            double fineBeforePayment = this.currentLoanFromDB.getFine();
+
+            if (paymentAmount > fineBeforePayment) {
+                showAlert(Alert.AlertType.WARNING, "Peringatan", "Jumlah bayar melebihi total denda. Pembayaran akan disesuaikan dengan total denda.");
+                paymentAmount = fineBeforePayment;
+            }
+
             double fineAfterPayment = fineBeforePayment - paymentAmount;
             if (fineAfterPayment < 0) fineAfterPayment = 0;
 
-            // 1. Buat dan simpan transaksi
             Transaction transaction = new Transaction(member, paymentAmount, fineBeforePayment, fineAfterPayment);
-            transactionDAO.addTransaction(transaction);
+            boolean transactionSuccess = transactionDAO.addTransaction(transaction);
 
-            // 2. Update sisa denda di tabel loans
-            loanDAO.updateLoanFine(currentRecord.getLoanId(), fineAfterPayment);
-
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Payment of Rp " + paymentAmount + " has been recorded.");
-            closeWindow();
+            if (transactionSuccess) {
+                loanDAO.updateLoanFine(currentRecord.getLoanId(), fineAfterPayment);
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Pembayaran sebesar Rp " + String.format("%,.0f", paymentAmount) + " telah dicatat.");
+                closeWindow();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Database Error", "Gagal menyimpan catatan transaksi.");
+            }
 
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Input", "Please enter a valid number for the payment amount.");
+            showAlert(Alert.AlertType.ERROR, "Input Tidak Valid", "Harap masukkan angka yang valid untuk jumlah pembayaran.");
         }
     }
 
