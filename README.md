@@ -111,7 +111,7 @@ MySQL adalah sistem manajemen basis data open-source yang menggunakan bahasa SQL
 
 ## 📖 Dokumentasi Lengkap
 Dokumentasi teknis proyek dapat diakses melalui link berikut:  
-[Dokumentasi Final Project PBO](https://docs.google.com/document/d/1CtwHis7G_YfpyJPfrXR62pF8oCSVRRxLGQMwSSKJDkM/edit?usp=sharing)
+[Dokumentasi Final Project PBO](file:///C:/Users/Naufal/OneDrive/Desktop/Final_Project_PBO/Final_Project_PBO_Team-Dash/docs/Laporan%20Project%20Team%20Dash.pdf)
 
 Dokumentasi ini mencakup:
 - Desain sistem dan diagram UML
@@ -122,7 +122,7 @@ Dokumentasi ini mencakup:
 
 ## 🎥 Demo Video
 Untuk melihat demo penggunaan aplikasi, silakan tonton video berikut:  
-`/demo/demo_video.mp4`
+`/demo/Link Vidio Demo & Github.txt`
 
 ---
 
