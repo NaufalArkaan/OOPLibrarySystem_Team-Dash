@@ -10,12 +10,7 @@ import java.io.IOException;
 
 public class NavigationHelper {
 
-    /**
-     * Navigasi antar konten (dalam satu scene) berdasarkan button ID.
-     *
-     * @param contentPane Pane target yang ingin diisi ulang kontennya
-     * @param buttonId    fx:id dari tombol yang ditekan
-     */
+
     public static void navigate(AnchorPane contentPane, String buttonId) {
         String fxmlFile;
 
@@ -41,13 +36,10 @@ public class NavigationHelper {
             FXMLLoader loader = new FXMLLoader(NavigationHelper.class.getResource(fxmlFile));
             Parent newContent = loader.load();
 
-            // Bersihkan dulu children
             contentPane.getChildren().clear();
 
-            // Tambahkan newContent ke contentPane
             contentPane.getChildren().add(newContent);
 
-            // Set anchor agar newContent memenuhi contentPane
             AnchorPane.setTopAnchor(newContent, 0.0);
             AnchorPane.setRightAnchor(newContent, 0.0);
             AnchorPane.setBottomAnchor(newContent, 0.0);
@@ -59,11 +51,7 @@ public class NavigationHelper {
         }
     }
 
-    /**
-     * Load ulang scene Login (untuk logout).
-     *
-     * NOTE: Sebaiknya logout di-handle di controller utama agar lebih terstruktur.
-     */
+
     public static void loadLoginScene() {
         try {
             FXMLLoader loader = new FXMLLoader(NavigationHelper.class.getResource("/view/Login.fxml"));

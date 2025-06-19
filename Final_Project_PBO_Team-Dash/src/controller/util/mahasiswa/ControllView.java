@@ -1,4 +1,4 @@
-package controller.util.mahasiswa;  // sesuaikan nama package lowercase
+package controller.util.mahasiswa;
 
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -29,20 +29,17 @@ public class ControllView {
 
     @FXML
     public void initialize() {
-        // Pastikan semua tombol sudah di-inject
         if (homeBtn == null || contentPane == null) {
             System.err.println("FXML elements not injected properly!");
             return;
         }
 
-        // Pasang handler navigasi ke semua tombol
         homeBtn.setOnAction(this::handleNavigation);
         booksBtn.setOnAction(this::handleNavigation);
         borrowBtn.setOnAction(this::handleNavigation);
         historyBtn.setOnAction(this::handleNavigation);
         logoutBtn.setOnAction(this::handleNavigation);
 
-        // Tampilkan tampilan default (home/dashboard)
         NavigationHelper.navigate(contentPane, homeBtn.getId());
     }
 
@@ -84,7 +81,6 @@ public class ControllView {
 
             Scene loginScene = new Scene(loginRoot, 1200, 600);
 
-            // Gunakan getter dari Main
             var stage = Main.getPrimaryStage();
 
             stage.setMaximized(false);

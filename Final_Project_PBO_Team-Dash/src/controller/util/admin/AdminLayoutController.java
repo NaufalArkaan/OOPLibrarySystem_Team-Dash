@@ -21,7 +21,6 @@ public class AdminLayoutController {
         Button clickedButton = (Button) event.getSource();
         String buttonId = clickedButton.getId();
 
-        // Tangani tombol logout secara terpisah
         if ("logoutBtn".equals(buttonId)) {
             handleLogout();
         } else {

@@ -11,6 +11,8 @@ import Action.Transaction;
 import model.ReturnRecord;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +25,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -51,6 +54,7 @@ public class ReturnBooksController {
         initTableColumns();
         addReturnButtonToTable();
         refreshTableFromDatabase();
+        setupSearchFilter();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
@@ -93,7 +97,6 @@ public class ReturnBooksController {
                         refreshTableFromDatabase();
                         return;
                     }
-                    // Proses pengembalian hanya jika tidak ada denda
                     processReturn(loanToReturn);
                 });
 
@@ -110,19 +113,15 @@ public class ReturnBooksController {
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
                 } else {
-                    // --- PERBAIKAN UTAMA DI SINI ---
                     ReturnRecord record = getTableRow().getItem();
-                    // Mengambil nilai denda dari record
                     String fineText = record.getFine();
-                    // Membersihkan format "Rp " dan koma untuk mendapatkan angka
                     double fineValue = 0;
                     try {
-                        fineValue = Double.parseDouble(fineText.replaceAll("[^\\d.]", ""));
+                        fineValue = Double.parseDouble(fineText.replace(",", "").replaceAll("[^\\d.]", ""));
                     } catch (NumberFormatException e) {
-                        // Abaikan jika format tidak valid
+                        System.err.println("Gagal parse nilai denda dari string: " + fineText + ". Error: " + e.getMessage());
                     }
 
-                    // Menonaktifkan tombol "Return" jika denda lebih dari 0
                     returnBtn.setDisable(fineValue > 0);
 
                     setGraphic(actionButtons);
@@ -148,67 +147,119 @@ public class ReturnBooksController {
             refreshTableFromDatabase();
         } catch (IOException e) {
             e.printStackTrace();
-            showErrorAlert("Error", "Could not open the fine management window.");
+            showErrorAlert("Error", "Could not open the fine management window: " + e.getMessage());
         }
     }
 
     private Loan findLoanInDatabase(int loanId) {
-        ArrayList<Loan> allLoans = loanDAO.getAllActiveLoansWithDetails();
-        for(Loan loan : allLoans) {
-            if(loan.getLoanId() == loanId) {
-                return loan;
+        try {
+            ArrayList<Loan> allLoans = loanDAO.getAllActiveLoansWithDetails();
+            for(Loan loan : allLoans) {
+                if(loan.getLoanId() == loanId) {
+                    return loan;
+                }
             }
+        }
+        catch (RuntimeException e) {
+            showErrorAlert("Error Database", "Gagal mencari data peminjaman di database: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
 
     private void processReturn(Loan loan) {
-        boolean success = loanDAO.returnLoan(loan.getLoanId());
-        if(success) {
-            Book returnedBook = bookDAO.findBookByCode(loan.getBook().getCode());
-            if (returnedBook != null) {
-                int newStock = returnedBook.getQuantity() + loan.getQuantity();
-                bookDAO.updateBookQuantity(returnedBook.getCode(), newStock);
-                if (newStock > 0) {
-                    bookDAO.updateBookStatus(returnedBook.getCode(), "Available");
+        try {
+            boolean success = loanDAO.returnLoan(loan.getLoanId());
+            if(success) {
+                Book returnedBook = bookDAO.findBookByCode(loan.getBook().getCode());
+                if (returnedBook != null) {
+                    int newStock = returnedBook.getQuantity() + loan.getQuantity();
+                    bookDAO.updateBookQuantity(returnedBook.getCode(), newStock);
+                    if (newStock > 0) {
+                        bookDAO.updateBookStatus(returnedBook.getCode(), "Available");
+                    } else {
+                        bookDAO.updateBookStatus(returnedBook.getCode(), "Borrowed");
+                    }
+                } else {
+                    showErrorAlert("Peringatan", "Buku yang dikembalikan tidak ditemukan di master data buku.");
                 }
+                showInfoAlert("Pengembalian Sukses", "Buku \"" + loan.getBook().getTitle() + "\" telah berhasil dikembalikan.");
+                refreshTableFromDatabase();
+            } else {
+                showErrorAlert("Gagal", "Gagal memproses pengembalian di database.");
             }
-            showInfoAlert("Pengembalian Sukses", "Buku \"" + loan.getBook().getTitle() + "\" telah berhasil dikembalikan.");
-            refreshTableFromDatabase();
-        } else {
-            showErrorAlert("Gagal", "Gagal memproses pengembalian di database.");
+        } catch (RuntimeException e) {
+            showErrorAlert("Error Database", "Terjadi kesalahan saat memproses pengembalian: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showErrorAlert("Error", "Terjadi kesalahan tak terduga saat memperbarui stok buku: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private void refreshTableFromDatabase() {
         returnList.clear();
-        ArrayList<Loan> activeLoans = loanDAO.getAllActiveLoansWithDetails();
-        int counter = 1;
+        try {
+            ArrayList<Loan> allActiveLoans = loanDAO.getAllActiveLoansWithDetails();
+            int counter = 1;
 
-        for (Loan loan : activeLoans) {
-            Member member = userDAO.findMemberById(loan.getUserId());
-            if (member != null) {
-                double currentFine = loan.getFine() > 0 ? loan.getFine() : loan.calculateFine();
+            for (Loan loan : allActiveLoans) {
+                Member member = userDAO.findMemberById(loan.getUserId());
+                if (member != null) {
+                    double currentFine = loan.getFine() > 0 ? loan.getFine() : loan.calculateFine();
 
-                ReturnRecord record = new ReturnRecord(
-                        counter++,
-                        member.getStudentId(),
-                        member.getName(),
-                        loan.getBook().getTitle(),
-                        loan.getBorrowDate(),
-                        loan.getDueDate(),
-                        "Rp " + String.format("%,.0f", currentFine),
-                        "Belum Kembali",
-                        loan.getQuantity()
-                );
-                record.setUserId(member.getUserId());
-                record.setBookCode(loan.getBook().getCode());
-                record.setLoanId(loan.getLoanId());
-                returnList.add(record);
+                    ReturnRecord record = new ReturnRecord(
+                            counter++,
+                            member.getStudentId(),
+                            member.getName(),
+                            loan.getBook().getTitle(),
+                            loan.getBorrowDate(),
+                            loan.getDueDate(),
+                            "Rp " + String.format("%,.0f", currentFine),
+                            "Belum Kembali",
+                            loan.getQuantity()
+                    );
+                    record.setUserId(member.getUserId());
+                    record.setBookCode(loan.getBook().getCode());
+                    record.setLoanId(loan.getLoanId());
+                    returnList.add(record);
+                } else {
+                    System.err.println("Peringatan: Member dengan ID " + loan.getUserId() + " tidak ditemukan untuk peminjaman " + loan.getLoanId());
+                }
             }
+            tableView.setItems(returnList);
+        } catch (RuntimeException e) {
+            showErrorAlert("Error Database", "Gagal memuat data pengembalian dari database: " + e.getMessage());
+            e.printStackTrace();
         }
-        tableView.setItems(returnList);
     }
+
+    private void setupSearchFilter() {
+        FilteredList<ReturnRecord> filteredData = new FilteredList<>(returnList, p -> true);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(record -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (record.getStudentId().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (record.getMemberName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (record.getBookTitle().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false;
+            });
+        });
+
+        SortedList<ReturnRecord> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedData);
+    }
+
 
     private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -7,16 +7,14 @@ import java.util.ArrayList;
 
 public class TransactionDAO {
 
-    /**
-     * PERBAIKAN UTAMA: Query INSERT disesuaikan untuk menyertakan kolom 'username'.
-     */
+
     public boolean addTransaction(Transaction transaction) {
         String sql = "INSERT INTO transactions (userid, username, transaction_date_time, amount_paid, fine_before_payment, fine_after_payment) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, transaction.getMember().getUserId());
-            pstmt.setString(2, transaction.getMember().getUsername()); // Mengambil username dari Member
+            pstmt.setString(2, transaction.getMember().getUsername());
             pstmt.setTimestamp(3, Timestamp.valueOf(transaction.getTransactionDateTime()));
             pstmt.setDouble(4, transaction.getAmountPaid());
             pstmt.setDouble(5, transaction.getFineBeforePayment());
@@ -33,7 +31,6 @@ public class TransactionDAO {
 
     public ArrayList<Transaction> getAllTransactions() {
         ArrayList<Transaction> transactions = new ArrayList<>();
-        // Query SELECT ini sudah benar
         String sql = "SELECT t.idtransactions AS transaction_id, t.userid, t.transaction_date_time, " +
                 "t.amount_paid, t.fine_before_payment, t.fine_after_payment, " +
                 "u.user_id AS member_db_id, u.username AS member_username, u.password AS member_password_hash, " +

@@ -131,8 +131,6 @@ public class ReportsAndChartsController {
 
         tableView.getColumns().addAll(colNo, colName, colStudentId, colFine, colDate, colStatus);
 
-        // --- PERBAIKAN UTAMA DI SINI ---
-        // Menerapkan perataan tengah untuk semua kolom
         setTransactionColumnAlignment(colNo, Pos.CENTER);
         colNo.setCellFactory(col -> new TableCell<>() {
             @Override

@@ -3,35 +3,17 @@ package User;
 
 public class Admin extends User {
 
-    /**
-     * Konstruktor untuk membuat objek Admin dari data database.
-     * @param userId ID unik admin.
-     * @param username Username untuk login.
-     * @param password Password untuk login.
-     * @param name Nama lengkap admin.
-     * @param email Alamat email admin.
-     */
+
     public Admin(int userId, String username, String password, String name, String email) {
         super(userId, username, password, "Admin", name, email, null, null);
     }
 
-    /**
-     * Konstruktor untuk membuat objek Admin baru sebelum disimpan ke database.
-     * @param username Username untuk login.
-     * @param password Password untuk login.
-     * @param name Nama lengkap admin.
-     * @param email Alamat email admin.
-     */
+
     public Admin(String username, String password, String name, String email) {
-        // userId akan di-generate oleh database
         super(username, password, "Admin", name, email, null, null);
     }
 
-    // Metode loginAsAdmin statis dihapus. Logika login akan ada di UserDAO atau AuthService.
-    // Contoh: public static Admin loginAsAdmin(String username, String password) { ... }
 
-    // Metode displayMenu() bisa tetap ada jika hanya untuk menampilkan teks menu,
-    // namun tidak akan lagi menjadi tanggung jawab kelas Admin untuk memproses login.
     public void displayMenu() {
         System.out.println("\n=== Menu Admin Perpustakaan UMM (dari Admin.java) ===");
         System.out.println("0. Dashboard (Statistik Cepat)");

@@ -18,10 +18,10 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-        // Mengambil data dari sumber yang benar
+
         int totalCopies = bookDAO.getTotalBookCopiesCount();
         int totalTitles = bookDAO.getTotalBookTitlesCount();
-        int borrowedCount = loanDAO.getTotalActiveLoans(); // Panggilan ini sekarang valid
+        int borrowedCount = loanDAO.getTotalActiveLoans();
 
         updateDashboard(totalCopies, totalTitles, borrowedCount);
     }

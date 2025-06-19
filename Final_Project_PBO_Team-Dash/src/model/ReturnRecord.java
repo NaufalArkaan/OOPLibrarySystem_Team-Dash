@@ -3,27 +3,22 @@ package model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Model class ini berfungsi sebagai DTO (Data Transfer Object) untuk menampilkan
- * data gabungan dari berbagai sumber (Loan, Member, Book) di dalam tabel admin.
- * Ini BUKAN representasi langsung dari satu tabel di database.
- */
+
 public class ReturnRecord {
     private int no;
     private String studentId;
     private String memberName;
     private String bookTitle;
     private LocalDate borrowDate;
-    private LocalDate returnDate; // Diisi dengan DueDate atau ActualReturnDate tergantung konteks
+    private LocalDate returnDate;
     private String fine;
     private String status;
     private int totalBorrowed;
 
-    // ID penting untuk melakukan aksi update atau delete
     private int userId;
     private String bookCode;
     private int loanId;
-    private LocalDate actualReturnDate; // Tanggal pengembalian yang sebenarnya
+    private LocalDate actualReturnDate;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -41,7 +36,6 @@ public class ReturnRecord {
         this.totalBorrowed = totalBorrowed;
     }
 
-    // --- Getters ---
     public int getNo() { return no; }
     public String getStudentId() { return studentId; }
     public String getMemberName() { return memberName; }
@@ -56,7 +50,6 @@ public class ReturnRecord {
     public int getLoanId() { return loanId; }
     public LocalDate getActualReturnDate() { return actualReturnDate; }
 
-    // Getter untuk format tanggal yang akan digunakan oleh TableView
     public String getBorrowDateFormatted() {
         return borrowDate != null ? borrowDate.format(formatter) : "";
     }
@@ -64,7 +57,6 @@ public class ReturnRecord {
         return returnDate != null ? returnDate.format(formatter) : "";
     }
 
-    // --- Setters ---
     public void setNo(int no) { this.no = no; }
     public void setStudentId(String studentId) { this.studentId = studentId; }
     public void setMemberName(String memberName) { this.memberName = memberName; }

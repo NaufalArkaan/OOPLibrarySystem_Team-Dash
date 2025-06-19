@@ -1,7 +1,8 @@
 package controller.mahasiswa;
 
-import SQL_DATA.UserDAO; // <-- Ganti import dari UserDatabase ke UserDAO
-import User.Member; // <-- Import kelas Member
+import SQL_DATA.UserDAO;
+import User.Member;
+import ExceptionHandle.UsernameAlreadyExistsException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,7 +21,6 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
-    // Buat instance dari UserDAO
     private final UserDAO userDAO = new UserDAO();
 
     @FXML
@@ -36,16 +36,21 @@ public class RegisterController {
             return;
         }
 
-        // PERBAIKAN: Buat objek Member baru dari data form
-        // Kita menggunakan konstruktor kedua di Member yang tidak memerlukan userId
-        Member newMember = new Member(username, password, username, email, major, nim); // Nama disamakan dengan username untuk sementara
+        Member newMember = new Member(username, password, username, email, major, nim);
 
-        // PERBAIKAN: Panggil metode registerMember dari UserDAO
-        if (userDAO.registerMember(newMember)) {
-            showAlert(Alert.AlertType.INFORMATION, "Registrasi Berhasil", "Akun berhasil dibuat! Silakan login.");
-            goToLoginScene();
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", "Username '" + username + "' sudah digunakan. Silakan coba yang lain.");
+        try {
+            if (userDAO.registerMember(newMember)) {
+                showAlert(Alert.AlertType.INFORMATION, "Registrasi Berhasil", "Akun berhasil dibuat! Silakan login.");
+                goToLoginScene();
+            }
+        } catch (UsernameAlreadyExistsException e) {
+            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", e.getMessage());
+        } catch (RuntimeException e) {
+            showAlert(Alert.AlertType.ERROR, "Error Database", "Terjadi kesalahan koneksi database: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Registrasi Gagal", "Terjadi kesalahan tak terduga: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -63,6 +68,7 @@ public class RegisterController {
             Main.getPrimaryStage().setMaximized(true);
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Gagal memuat halaman login.");
         }
     }
 

@@ -1,6 +1,7 @@
 package SQL_DATA;
 
 import Data.Book;
+import ExceptionHandle.BookNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +40,7 @@ public class BookDAO {
         } catch (SQLException e) {
             System.err.println("Error saat mengupdate buku: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Gagal mengupdate buku di database.", e);
         }
     }
 
@@ -54,6 +55,7 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil semua buku: " + e.getMessage());
+            throw new RuntimeException("Gagal mengambil daftar buku dari database.", e);
         }
         return books;
     }
@@ -69,11 +71,12 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil gambar untuk buku " + bookCode + ": " + e.getMessage());
+            throw new RuntimeException("Gagal mengambil gambar buku dari database.", e);
         }
         return null;
     }
 
-    public Book findBookByCode(String bookCode) {
+    public Book findBookByCode(String bookCode) throws BookNotFoundException {
         String sql = "SELECT * FROM books WHERE code = ?";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -81,11 +84,13 @@ public class BookDAO {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return mapResultSetToBook(rs);
+            } else {
+                throw new BookNotFoundException("Buku dengan kode " + bookCode + " tidak ditemukan.");
             }
         } catch (SQLException e) {
             System.err.println("Error saat mencari buku berdasarkan kode: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat mencari buku.", e);
         }
-        return null;
     }
 
     public boolean updateBookQuantity(String bookCode, int quantity) {
@@ -97,7 +102,7 @@ public class BookDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat update kuantitas buku: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Gagal mengupdate kuantitas buku di database.", e);
         }
     }
 
@@ -115,7 +120,10 @@ public class BookDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat menambah buku: " + e.getMessage());
-            return false;
+            if (e.getErrorCode() == 1062) {
+                throw new RuntimeException("Kode buku (ISBN) sudah ada.", e);
+            }
+            throw new RuntimeException("Gagal menambah buku baru ke database.", e);
         }
     }
 
@@ -128,7 +136,7 @@ public class BookDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat update status buku: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Gagal mengupdate status buku di database.", e);
         }
     }
 
@@ -140,7 +148,7 @@ public class BookDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat menghapus buku: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Gagal menghapus buku dari database. Mungkin ada data terkait.", e);
         }
     }
 
@@ -154,6 +162,7 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat menghitung total judul buku: " + e.getMessage());
+            throw new RuntimeException("Gagal menghitung total judul buku dari database.", e);
         }
         return 0;
     }
@@ -168,6 +177,7 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat menghitung total eksemplar buku: " + e.getMessage());
+            throw new RuntimeException("Gagal menghitung total eksemplar buku dari database.", e);
         }
         return 0;
     }

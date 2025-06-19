@@ -32,9 +32,7 @@ public class Main extends Application {
         setScene(root, "Admin Dashboard - UMM Library");
     }
 
-    // ==== PASTIKAN METODE INI ADA DAN TEPAT SEPERTI INI ====
     public static void showAdminLoginView() throws Exception {
-        // Pastikan path FXML ini sudah benar: /view/admin/LoginAdmin.fxml
         Parent root = FXMLLoader.load(Main.class.getResource("/view/admin/LoginAdmin.fxml"));
         setScene(root, "Admin Login - UMM Library Access");
     }

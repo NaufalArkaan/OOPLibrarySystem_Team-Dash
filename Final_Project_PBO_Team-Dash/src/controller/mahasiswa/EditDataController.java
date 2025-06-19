@@ -38,7 +38,7 @@ public class EditDataController {
             currentRecord.setTitle(titleField.getText());
             currentRecord.setIsbn(isbnField.getText());
 
-            // Close the window after update
+
             closeWindow();
         }
     }

@@ -3,6 +3,8 @@ package SQL_DATA;
 import User.Admin;
 import User.Member;
 import User.User;
+import ExceptionHandle.InvalidCredentialsException;
+import ExceptionHandle.UsernameAlreadyExistsException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +14,7 @@ import java.util.ArrayList;
 public class UserDAO {
 
 
-    public boolean registerMember(Member member) {
-
+    public boolean registerMember(Member member) throws UsernameAlreadyExistsException {
         String sql = "INSERT INTO users (username, password, role, email, major, id_member) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -29,7 +30,7 @@ public class UserDAO {
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) {
-                System.err.println("Registrasi gagal: Username '" + member.getUsername() + "' atau ID Member sudah ada.");
+                throw new UsernameAlreadyExistsException("Username '" + member.getUsername() + "' atau ID Member sudah ada.");
             } else {
                 System.err.println("Error saat mendaftarkan member baru: " + e.getMessage());
                 e.printStackTrace();
@@ -39,7 +40,7 @@ public class UserDAO {
     }
 
 
-    public User findUserByCredentials(String username, String password) {
+    public User findUserByCredentials(String username, String password) throws InvalidCredentialsException {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -66,10 +67,11 @@ public class UserDAO {
                     return new Member(userId, dbUsername, dbPassword, name, email, major, studentId);
                 }
             }
+            throw new InvalidCredentialsException("Username atau password salah.");
         } catch (SQLException e) {
             System.err.println("Error saat mencari user berdasarkan kredensial: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat otentikasi.", e);
         }
-        return null;
     }
 
 

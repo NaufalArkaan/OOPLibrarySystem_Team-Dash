@@ -1,5 +1,3 @@
-// File: src/controller/LoginController.java
-
 package controller;
 
 import javafx.fxml.FXML;
@@ -15,6 +13,7 @@ import SQL_DATA.UserDAO;
 import User.Admin;
 import User.Member;
 import User.User;
+import ExceptionHandle.InvalidCredentialsException;
 import java.io.IOException;
 
 public class LoginController {
@@ -23,7 +22,7 @@ public class LoginController {
     @FXML private PasswordField passwordField;
 
     private UserDAO userDAO = new UserDAO();
-    public static User loggedInUser; // Variabel ini akan kita gunakan
+    public static User loggedInUser;
 
     @FXML
     private void handleLoginButtonAction(ActionEvent event) {
@@ -35,43 +34,51 @@ public class LoginController {
             return;
         }
 
-        loggedInUser = userDAO.findUserByCredentials(username, password);
+        try {
+            loggedInUser = userDAO.findUserByCredentials(username, password);
+            if (loggedInUser != null) {
+                System.out.println("Login berhasil!");
+                if (loggedInUser instanceof Admin) {
+                    try {
+                        Main.showAdminView();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showAlert(Alert.AlertType.ERROR, "Error", "Gagal memuat tampilan Admin.");
+                    }
+                } else if (loggedInUser instanceof Member) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/mahasiswa/ViewControll.fxml"));
+                        Parent root = loader.load();
 
-        if (loggedInUser != null) {
-            System.out.println("Login berhasil!");
-            if (loggedInUser instanceof Admin) {
-                try {
-                    Main.showAdminView();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (loggedInUser instanceof Member) {
-                try {
-                    // CUKUP MUAT FXML-NYA SAJA, TANPA LOGIKA CONTROLLER TAMBAHAN
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/mahasiswa/ViewControll.fxml"));
-                    Parent root = loader.load();
+                        Scene scene = new Scene(root, 1200, 800);
+                        Main.getPrimaryStage().setScene(scene);
+                        Main.getPrimaryStage().setTitle("Dashboard Member");
+                        Main.getPrimaryStage().setMaximized(true);
 
-                    Scene scene = new Scene(root, 1200, 800);
-                    Main.getPrimaryStage().setScene(scene);
-                    Main.getPrimaryStage().setTitle("Dashboard Member");
-                    Main.getPrimaryStage().setMaximized(true);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showAlert(Alert.AlertType.ERROR, "Error", "Gagal memuat tampilan Member.");
+                    }
                 }
             }
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Login Gagal", "Username atau password salah!");
+        } catch (InvalidCredentialsException e) {
+            showAlert(Alert.AlertType.ERROR, "Login Gagal", e.getMessage());
+        } catch (RuntimeException e) {
+            showAlert(Alert.AlertType.ERROR, "Error Database", "Terjadi kesalahan koneksi database: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Terjadi kesalahan tak terduga: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    // Metode lainnya tetap sama...
     @FXML
     private void handleSignUpLink(ActionEvent event) {
         try {
             Main.showRegistrationView();
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Gagal memuat halaman registrasi.");
         }
     }
 

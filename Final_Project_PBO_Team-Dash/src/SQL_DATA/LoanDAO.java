@@ -3,6 +3,7 @@ package SQL_DATA;
 import Data.Book;
 import Data.Loan;
 import User.Member;
+import ExceptionHandle.NoDataFoundException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -33,7 +34,7 @@ public class LoanDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Gagal menambah data peminjaman ke database.", e);
         }
     }
 
@@ -46,7 +47,7 @@ public class LoanDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat update status pengembalian: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Gagal mengupdate status pengembalian di database.", e);
         }
     }
 
@@ -59,7 +60,7 @@ public class LoanDAO {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error saat update denda pinjaman: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Gagal mengupdate denda pinjaman di database.", e);
         }
     }
 
@@ -89,7 +90,7 @@ public class LoanDAO {
         return loan;
     }
 
-    public ArrayList<Loan> getActiveLoansByUserId(int userId) {
+    public ArrayList<Loan> getActiveLoansByUserId(int userId) throws NoDataFoundException {
         ArrayList<Loan> loans = new ArrayList<>();
         String sql = "SELECT l.*, b.title, b.author, b.category, b.image, b.status AS book_status " +
                 "FROM loans l JOIN books b ON l.book_code = b.code WHERE l.user_id = ? AND l.status = 'Borrowed'";
@@ -102,11 +103,15 @@ public class LoanDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil peminjaman aktif by User ID: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat mengambil peminjaman aktif.", e);
+        }
+        if (loans.isEmpty()) {
+            throw new NoDataFoundException("Tidak ada buku yang sedang dipinjam oleh user ini.");
         }
         return loans;
     }
 
-    public ArrayList<Loan> getReturnedLoansByUserId(int userId) {
+    public ArrayList<Loan> getReturnedLoansByUserId(int userId) throws NoDataFoundException {
         ArrayList<Loan> loans = new ArrayList<>();
         String sql = "SELECT l.*, b.title, b.author, b.category, b.image, b.status AS book_status " +
                 "FROM loans l JOIN books b ON l.book_code = b.code WHERE l.user_id = ? AND l.status = 'Returned'";
@@ -119,6 +124,10 @@ public class LoanDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil peminjaman yang sudah kembali: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat mengambil peminjaman yang sudah kembali.", e);
+        }
+        if (loans.isEmpty()) {
+            throw new NoDataFoundException("Belum ada riwayat pengembalian buku untuk user ini.");
         }
         return loans;
     }
@@ -139,6 +148,7 @@ public class LoanDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil semua peminjaman aktif: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat mengambil semua peminjaman aktif.", e);
         }
         return allLoans;
     }
@@ -155,6 +165,7 @@ public class LoanDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error saat mengambil semua peminjaman: " + e.getMessage());
+            throw new RuntimeException("Terjadi kesalahan database saat mengambil semua peminjaman.", e);
         }
         return allLoans;
     }
@@ -170,6 +181,7 @@ public class LoanDAO {
         } catch (SQLException e) {
             System.err.println("Error menghitung total peminjaman aktif: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Gagal menghitung total peminjaman aktif dari database.", e);
         }
         return 0;
     }

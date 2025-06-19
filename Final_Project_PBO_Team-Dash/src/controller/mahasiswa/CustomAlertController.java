@@ -21,7 +21,6 @@ public class CustomAlertController {
    
     @FXML
     private void handleOK() {
-        // Mendapatkan stage dari tombol dan menutupnya
         Stage stage = (Stage) okButton.getScene().getWindow();
         stage.close();
     }

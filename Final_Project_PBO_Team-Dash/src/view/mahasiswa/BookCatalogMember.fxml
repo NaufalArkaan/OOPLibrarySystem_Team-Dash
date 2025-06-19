@@ -11,7 +11,7 @@
 
     <!-- ===================== TOP ====================== -->
     <top>
-        <VBox spacing="10"> <!-- tambahkan spacing di sini -->
+        <VBox spacing="10">
 
             <StackPane alignment="TOP_CENTER" style="-fx-padding: 0 20;">
                 <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="1000">

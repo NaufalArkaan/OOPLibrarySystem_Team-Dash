@@ -8,6 +8,7 @@ import controller.LoginController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import ExceptionHandle.NoDataFoundException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -43,27 +44,33 @@ public class DashboardMemberControll {
 
         if (currentMember == null) return;
 
-        // Mengisi daftar buku yang SEDANG DIPINJAM
-        ArrayList<Loan> activeLoans = loanDAO.getActiveLoansByUserId(currentMember.getUserId());
-        if (activeLoans.isEmpty()) {
-            borrowedBooksList.getItems().add("Tidak ada buku yang sedang dipinjam.");
-        } else {
+
+        try {
+            ArrayList<Loan> activeLoans = loanDAO.getActiveLoansByUserId(currentMember.getUserId());
             for (Loan loan : activeLoans) {
                 String entry = loan.getBook().getTitle() + " (x" + loan.getQuantity() + ") - Jatuh Tempo: " + loan.getDueDate().format(formatter);
                 borrowedBooksList.getItems().add(entry);
             }
+        } catch (NoDataFoundException e) {
+            borrowedBooksList.getItems().add("Tidak ada buku yang sedang dipinjam.");
+        } catch (RuntimeException e) {
+            borrowedBooksList.getItems().add("Error memuat daftar buku pinjaman: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        // Mengisi daftar buku yang SUDAH DIKEMBALIKAN
-        ArrayList<Loan> returnedLoans = loanDAO.getReturnedLoansByUserId(currentMember.getUserId());
-        if (returnedLoans.isEmpty()) {
-            returnBook.getItems().add("Belum ada riwayat pengembalian buku.");
-        } else {
+
+        try {
+            ArrayList<Loan> returnedLoans = loanDAO.getReturnedLoansByUserId(currentMember.getUserId());
             for (Loan loan : returnedLoans) {
                 String returnDateStr = (loan.getActualReturnDate() != null) ? loan.getActualReturnDate().format(formatter) : "N/A";
                 String entry = loan.getBook().getTitle() + " (x" + loan.getQuantity() + ") - Dikembalikan: " + returnDateStr;
                 returnBook.getItems().add(entry);
             }
+        } catch (NoDataFoundException e) {
+            returnBook.getItems().add("Belum ada riwayat pengembalian buku.");
+        } catch (RuntimeException e) {
+            returnBook.getItems().add("Error memuat riwayat pengembalian buku: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

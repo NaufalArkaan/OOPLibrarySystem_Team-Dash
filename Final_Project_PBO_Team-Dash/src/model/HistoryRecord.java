@@ -1,8 +1,6 @@
 package model;
 
-/**
- * Model data untuk menyimpan riwayat peminjaman buku oleh mahasiswa.
- */
+
 public class HistoryRecord {
     private String name;
     private String className;
@@ -16,7 +14,6 @@ public class HistoryRecord {
         this.isbn = isbn;
     }
 
-    // --- Getter ---
     public String getName() {
         return name;
     }
@@ -33,7 +30,6 @@ public class HistoryRecord {
         return isbn;
     }
 
-    // --- Setter ---
     public void setName(String name) {
         this.name = name;
     }
