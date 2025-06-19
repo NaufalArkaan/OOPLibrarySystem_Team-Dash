@@ -39,7 +39,7 @@ public class LoginAdminControl {
             }
         } else {
             System.out.println("Admin login gagal!");
-            showAlert(Alert.AlertType.ERROR, "Login Gagal", null, "Username atau password view.admin.admin salah!");
+            showAlert(Alert.AlertType.ERROR, "Login Gagal", null, "Username atau password admin salah!");
         }
     }
 
