@@ -33,6 +33,12 @@ Proyek ini dikerjakan selama 4 minggu dengan pembagian tugas sebagai berikut:
 
 ---
 
+## 🗝️ Username & Password Halaman Admin
+<h4>Username: admin<h4/>
+<h4>Password: admin123<h4/>
+
+---
+
 ## 📂 Struktur Repository
 - **/data**  
   Folder ini menyimpan file CSV yang berisi data sampel buku dan anggota yang digunakan untuk testing dan demo aplikasi, namun kami tidak menggunakan CSV, melainkan mengambil data dari database MySQL
