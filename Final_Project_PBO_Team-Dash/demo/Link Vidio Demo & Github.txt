@@ -1,0 +1,5 @@
+Link video demo:
+https://youtu.be/TrWi6VHOPok?si=lnAcQIyAMizMcX6b
+
+Link gitHub project:
+https://github.com/NaufalArkaan/OOPLibrarySystem_Team-Dash
